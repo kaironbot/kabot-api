@@ -23,4 +23,6 @@ class DatabaseService(
         )
     )
 
+    fun getAllGuildItems(guildId: String) = database.getItems(guildId)
+
 }
