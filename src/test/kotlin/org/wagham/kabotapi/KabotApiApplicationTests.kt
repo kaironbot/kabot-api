@@ -1,10 +1,10 @@
-package com.wagham.kabotapi
+package org.wagham.kabotapi
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class KabotapiApplicationTests {
+class KabotApiApplicationTests {
 
 	@Test
 	fun contextLoads() {

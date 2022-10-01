@@ -7,18 +7,21 @@ plugins {
 	kotlin("plugin.spring") version "1.6.21"
 }
 
-group = "com.wagham"
-version = "0.0.1-SNAPSHOT"
+group = "org.wagham"
+version = "0.0.1"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.repsy.io/mvn/testadirapa/kabot") }
 }
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.wagham:kabot-db-connector:0.0.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
