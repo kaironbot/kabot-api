@@ -25,6 +25,10 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 	implementation("org.wagham:kabot-db-connector:0.0.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.4.2")
+	testImplementation("io.kotest:kotest-framework-engine-jvm:5.4.2")
+	testImplementation(group = "io.kotest.extensions", name = "kotest-extensions-spring", version = "1.1.2")
 }
 
 tasks.withType<KotlinCompile> {
