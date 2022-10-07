@@ -24,10 +24,11 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 	implementation("org.wagham:kabot-db-connector:0.0.2")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
-	testImplementation("io.kotest:kotest-assertions-core-jvm:5.4.2")
-	testImplementation("io.kotest:kotest-framework-engine-jvm:5.4.2")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.0")
+	testImplementation("io.kotest:kotest-framework-engine-jvm:5.5.0")
 	testImplementation(group = "io.kotest.extensions", name = "kotest-extensions-spring", version = "1.1.2")
 }
 
