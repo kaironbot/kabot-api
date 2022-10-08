@@ -1,1 +1,1 @@
-rootProject.name = "kabotapi"
+rootProject.name = "kabot-api"
