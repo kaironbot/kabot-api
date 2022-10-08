@@ -42,5 +42,16 @@ jobs:
 
       - name: Build Image and Publish to Docker Hub
         run: |
-          ./gradlew bootBuildImage
-          docker push testadirapa/kabot-api:0.0.1
+          ./gradlew bootBuildImage --imageName=testadirapa/kabot-api:${{ secrets.VERSION }}
+          docker push testadirapa/kabot-api:${{ secrets.VERSION }}
+
+      - name: Run Api on Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+        script: |
+          docker rm -f -v kabot-api
+          docker run -d --name kabot-api -p 16170:16170 --env-file /home/waghambot/kabotapi.env testadirapa/kabot-api:${{ secrets.VERSION }}
