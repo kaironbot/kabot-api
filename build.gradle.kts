@@ -46,5 +46,5 @@ tasks.withType<Test> {
 }
 
 tasks.bootBuildImage {
-	imageName = "kabot-api:${project.version}"
+	imageName = "testadirapa/kabot-api:${project.version}"
 }
