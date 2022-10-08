@@ -43,4 +43,4 @@ jobs:
       - name: Build Image and Publish to Docker Hub
         run: |
           ./gradlew bootBuildImage
-          docker push testadirapa/kabot-api
+          docker push testadirapa/kabot-api:0.0.1
