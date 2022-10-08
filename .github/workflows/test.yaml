@@ -30,4 +30,4 @@ jobs:
           DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
           DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
           TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
-        run: ./gradlew kotest
+        run: ./gradlew test
