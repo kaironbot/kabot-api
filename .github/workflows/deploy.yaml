@@ -45,4 +45,5 @@ jobs:
 
       - name: Publish to Docker Hub
         run: |
+          docker load < result
           docker push testadirapa/kabot-api
