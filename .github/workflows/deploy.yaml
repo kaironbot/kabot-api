@@ -24,7 +24,13 @@ jobs:
           gradle wrapper
           chmod +x gradlew
 
-      - name: Build
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Docker build and push
         env:
           DB_ADMIN_IP: ${{ secrets.DB_ADMIN_IP }}
           DB_ADMIN_NAME: ${{ secrets.DB_ADMIN_NAME }}
@@ -32,18 +38,6 @@ jobs:
           DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
           DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
           TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
-        run: ./gradlew build
-
-      - name: Docker build
-        run: ./gradlew bootBuildImage
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-      - name: Publish to Docker Hub
         run: |
-          docker load < result
+          ./gradlew build
           docker push testadirapa/kabot-api
