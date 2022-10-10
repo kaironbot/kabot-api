@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "org.wagham"
-version = "0.0.1"
+version = "0.0.2"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
