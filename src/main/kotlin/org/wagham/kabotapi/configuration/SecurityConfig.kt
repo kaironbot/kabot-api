@@ -18,7 +18,10 @@ class SecurityConfig {
 
     @Bean
     fun securityWebFilterChain(http: HttpSecurity): SecurityFilterChain {
-        return http.cors().and().build()
+        return http.cors()
+            .and().csrf().disable()
+            .authorizeRequests()
+            .and().build()
     }
 
     @Bean
@@ -26,6 +29,8 @@ class SecurityConfig {
         val cors = CorsConfiguration()
         cors.allowedMethods = listOf("GET", "POST", "PUT", "DELETE")
         cors.allowedOrigins = listOf(testOrigin)
+        cors.allowCredentials = true
+        cors.allowedHeaders = listOf("Authorization", "Cache-Control", "Content-Type")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", cors)
         return source
