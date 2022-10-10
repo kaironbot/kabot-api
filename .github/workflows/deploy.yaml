@@ -32,6 +32,7 @@ jobs:
           DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
           DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
           TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
+          CORS_TEST_ORIGIN: ${{ secrets.CORS_TEST_ORIGIN }}
         run: ./gradlew build
 
       - name: Login to Docker Hub
