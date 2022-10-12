@@ -7,12 +7,24 @@ plugins {
 	kotlin("plugin.spring") version "1.6.21"
 }
 
+buildscript {
+	repositories {
+		mavenCentral() // or gradlePluginPortal()
+	}
+	dependencies {
+		classpath("com.dipien:semantic-version-gradle-plugin:1.3.0")
+	}
+}
+
 group = "org.wagham"
-version = "0.0.5"
+version = "0.2.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
+
+apply(plugin = "com.dipien.semantic-version")
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
 	maven { url = uri("https://repo.repsy.io/mvn/testadirapa/kabot") }
 }
 
