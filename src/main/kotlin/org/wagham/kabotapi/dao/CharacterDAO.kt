@@ -2,11 +2,11 @@ package org.wagham.kabotapi.dao
 
 import org.springframework.stereotype.Service
 import org.wagham.db.enums.CharacterStatus
-import org.wagham.kabotapi.services.DatabaseService
+import org.wagham.kabotapi.components.DatabaseComponent
 
 @Service
 class CharacterDAO(
-    val database: DatabaseService
+    val database: DatabaseComponent
 ) {
 
     suspend fun getActiveCharacter(guildId: String, playerId: String) =

@@ -1,11 +1,11 @@
 package org.wagham.kabotapi.dao
 
 import org.springframework.stereotype.Service
-import org.wagham.kabotapi.services.DatabaseService
+import org.wagham.kabotapi.components.DatabaseComponent
 
 @Service
 class ItemDAO(
-    val database: DatabaseService
+    val database: DatabaseComponent
 ) {
 
     fun getAllGuildItems(guildId: String) = database.itemsScope.getAllItems(guildId)
