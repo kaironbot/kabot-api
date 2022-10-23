@@ -17,7 +17,7 @@ buildscript {
 }
 
 group = "org.wagham"
-version = "0.2.0"
+version = "0.3.0"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 apply(plugin = "com.dipien.semantic-version")
