@@ -1,11 +1,11 @@
-package org.wagham.kabotapi.services
+package org.wagham.kabotapi.components
 
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.wagham.db.KabotMultiDBClient
 import org.wagham.db.models.MongoCredentials
 
-@Service
-class DatabaseService(
+@Component
+class DatabaseComponent(
     adminUser: String = System.getenv("DB_ADMIN_USER"),
     adminPwd: String = System.getenv("DB_ADMIN_PWD"),
     databaseName: String = System.getenv("DB_ADMIN_NAME"),
@@ -23,6 +23,19 @@ class DatabaseService(
         )
     )
 
-    fun getAllGuildItems(guildId: String) = database.getItems(guildId)
+    val backgroundsScope
+        get() = database.backgroundsScope
+    val charactersScope
+        get() = database.charactersScope
+    val featsScope
+        get() = database.featsScope
+    val itemsScope
+        get() = database.itemsScope
+    val playersScope
+        get() = database.playersScope
+    val spellsScope
+        get() = database.spellsScope
+    val subclassesScope
+        get() = database.subclassesScope
 
 }

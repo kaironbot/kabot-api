@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import org.wagham.db.exceptions.InvalidGuildException
-import org.wagham.kabotapi.dao.ItemDAO
+import org.wagham.kabotapi.dao.FeatDAO
 import java.lang.Exception
 
 @RestController
-@RequestMapping("/api/item")
-class ItemController (
-    val itemDAO: ItemDAO
+@RequestMapping("/api/feat")
+class FeatController(
+    val featDAO: FeatDAO
 ) {
 
     @GetMapping
-    fun getItems(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getFeats(@RequestHeader("Guild-ID") guildId: String) = mono {
         try {
-            itemDAO.getAllGuildItems(guildId)
+            featDAO.getAllFeats(guildId)
         } catch (e: Exception) {
             if (e is InvalidGuildException)
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)

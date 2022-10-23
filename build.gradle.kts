@@ -36,14 +36,14 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-	implementation("org.wagham:kabot-db-connector:0.0.2")
+	implementation("org.wagham:kabot-db-connector:0.1.0-SNAPSHOT")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 	implementation("org.slf4j:slf4j-api:2.0.3")
 	implementation("org.slf4j:slf4j-simple:2.0.3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
-	testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.0")
-	testImplementation("io.kotest:kotest-framework-engine-jvm:5.5.0")
+	testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.1")
+	testImplementation("io.kotest:kotest-framework-engine-jvm:5.5.1")
 	testImplementation(group = "io.kotest.extensions", name = "kotest-extensions-spring", version = "1.1.2")
 }
 
@@ -59,5 +59,9 @@ tasks.withType<Test> {
 }
 
 tasks.bootBuildImage {
-	imageName = "testadirapa/kabot-api:${project.version}"
+	imageName = "testadirapa/kabot-api:${version.toString().replace("-SNAPSHOT", "")}"
+}
+
+tasks.register("printLibVersion") {
+	println(version)
 }
