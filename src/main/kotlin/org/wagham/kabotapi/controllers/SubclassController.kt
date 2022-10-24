@@ -18,7 +18,7 @@ class SubclassController(
 ) {
 
     @GetMapping
-    fun getSubclasses(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getSubclasses(@RequestHeader("Guild-ID") guildId: String) =
         try {
             subclassDAO.getAllSubclasses(guildId)
         } catch (e: Exception) {
@@ -27,6 +27,4 @@ class SubclassController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
-
 }

@@ -18,7 +18,7 @@ class SpellController(
 ) {
 
     @GetMapping
-    fun getSpells(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getSpells(@RequestHeader("Guild-ID") guildId: String) =
         try {
             spellDAO.getAllSpells(guildId)
         } catch (e: Exception) {
@@ -27,7 +27,5 @@ class SpellController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
-
 
 }

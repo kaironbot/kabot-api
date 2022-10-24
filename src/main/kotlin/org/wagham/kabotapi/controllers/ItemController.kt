@@ -18,7 +18,7 @@ class ItemController (
 ) {
 
     @GetMapping
-    fun getItems(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getItems(@RequestHeader("Guild-ID") guildId: String) =
         try {
             itemDAO.getAllGuildItems(guildId)
         } catch (e: Exception) {
@@ -27,6 +27,5 @@ class ItemController (
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
 
 }

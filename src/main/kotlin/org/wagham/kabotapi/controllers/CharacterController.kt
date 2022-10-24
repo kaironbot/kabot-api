@@ -17,7 +17,7 @@ class CharacterController(
 ) {
 
     @GetMapping
-    fun getCharacters(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getCharacters(@RequestHeader("Guild-ID") guildId: String) =
         try {
             characterDAO.getAllCharacters(guildId)
         } catch (e: Exception) {
@@ -26,7 +26,6 @@ class CharacterController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
 
     @GetMapping("/active")
     fun getActiveCharacter(
@@ -48,8 +47,7 @@ class CharacterController(
     fun getCharactersWithPlayer(
         @RequestHeader("Guild-ID") guildId: String,
         @RequestParam(required = false) status: CharacterStatus?,
-    ) = mono {
-        try {
+    ) = try {
             characterDAO.getCharactersWithPlayer(guildId, status)
         } catch (e: Exception) {
             if (e is InvalidGuildException)
@@ -57,6 +55,5 @@ class CharacterController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
 
 }
