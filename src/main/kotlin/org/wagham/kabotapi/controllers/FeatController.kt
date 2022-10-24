@@ -18,7 +18,7 @@ class FeatController(
 ) {
 
     @GetMapping
-    fun getFeats(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getFeats(@RequestHeader("Guild-ID") guildId: String) =
         try {
             featDAO.getAllFeats(guildId)
         } catch (e: Exception) {
@@ -27,6 +27,5 @@ class FeatController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
 
 }

@@ -18,7 +18,7 @@ class BackgroundController(
 ){
 
     @GetMapping
-    fun getBackgrounds(@RequestHeader("Guild-ID") guildId: String) = mono {
+    fun getBackgrounds(@RequestHeader("Guild-ID") guildId: String) =
         try {
             backgroundDAO.getAllGuildBackgrounds(guildId)
         } catch (e: Exception) {
@@ -27,6 +27,5 @@ class BackgroundController(
             else
                 throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.message)
         }
-    }
 
 }
