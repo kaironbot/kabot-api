@@ -36,7 +36,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
-	implementation("org.wagham:kabot-db-connector:0.1.0-SNAPSHOT")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.1.1")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 	implementation("org.slf4j:slf4j-api:2.0.3")
 	implementation("org.slf4j:slf4j-simple:2.0.3")
