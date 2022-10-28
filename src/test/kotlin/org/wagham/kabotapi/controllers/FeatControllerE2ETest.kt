@@ -16,7 +16,7 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-suspend fun StringSpec.testFeatE2E(
+suspend fun StringSpec.testFeatE2ETest(
     url: String,
     client: HttpClient,
     guild: String,
