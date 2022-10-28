@@ -37,5 +37,7 @@ class DatabaseComponent(
         get() = database.spellsScope
     val subclassesScope
         get() = database.subclassesScope
+    val utilityScope
+        get() = database.utilityScope
 
 }
