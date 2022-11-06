@@ -32,49 +32,63 @@ class ControllerE2EConfig(
 
     init {
         runBlocking {
-            testBackgroundE2ETest(
+            backgroundE2ETest(
                 "http://localhost:${port}/api/background",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testCharacterE2ETest(
+            buildingE2ETest(
+                "http://localhost:${port}/api/building",
+                client,
+                testGuild,
+                objectMapper
+            )
+
+            characterE2ETest(
                 "http://localhost:${port}/api/character",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testFeatE2ETest(
+            featE2ETest(
                 "http://localhost:${port}/api/feat",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testItemE2ETest(
+            itemE2ETest(
                 "http://localhost:${port}/api/item",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testSpellE2ETest(
+            raceE2ETest(
+                "http://localhost:${port}/api/race",
+                client,
+                testGuild,
+                objectMapper
+            )
+
+            spellE2ETest(
                 "http://localhost:${port}/api/spell",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testSubclassE2ETest(
+            subclassE2ETest(
                 "http://localhost:${port}/api/subclass",
                 client,
                 testGuild,
                 objectMapper
             )
 
-            testUtilityE2ETest(
+            utilityE2ETest(
                 "http://localhost:${port}/api/utility",
                 client,
                 testGuild,

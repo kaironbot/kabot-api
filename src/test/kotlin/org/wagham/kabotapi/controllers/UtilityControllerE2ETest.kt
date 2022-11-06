@@ -9,14 +9,13 @@ import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wagham.db.models.ExpTable
-import org.wagham.db.models.Subclass
 import org.wagham.kabotapi.exceptions.ErrorResponsePayload
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-suspend fun StringSpec.testUtilityE2ETest(
+suspend fun StringSpec.utilityE2ETest(
     url: String,
     client: HttpClient,
     guild: String,

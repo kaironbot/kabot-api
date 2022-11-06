@@ -11,14 +11,13 @@ import kotlinx.coroutines.withContext
 import org.wagham.db.enums.CharacterStatus
 import org.wagham.db.models.Character
 import org.wagham.db.pipelines.characters.CharacterWithPlayer
-import org.wagham.db.pipelines.characters.CharactersWithPlayer
 import org.wagham.kabotapi.exceptions.ErrorResponsePayload
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-suspend fun StringSpec.testCharacterE2ETest(
+suspend fun StringSpec.characterE2ETest(
     url: String,
     client: HttpClient,
     guild: String,
