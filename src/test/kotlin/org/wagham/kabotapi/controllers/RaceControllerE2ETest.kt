@@ -8,21 +8,21 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wagham.db.models.Feat
+import org.wagham.db.models.Race
 import org.wagham.kabotapi.exceptions.ErrorResponsePayload
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-suspend fun StringSpec.featE2ETest(
+suspend fun StringSpec.raceE2ETest(
     url: String,
     client: HttpClient,
     guild: String,
     objectMapper: ObjectMapper
 ) {
 
-    "Can get all the Feats" {
+    "Can get all the Races" {
         val request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .GET()
@@ -32,12 +32,12 @@ suspend fun StringSpec.featE2ETest(
         val response = withContext(Dispatchers.IO) {
             client.send(request, HttpResponse.BodyHandlers.ofString())
         }
-        val feat = objectMapper.readValue(response.body(), object : TypeReference<List<Feat>>(){})
+        val backgrounds = objectMapper.readValue(response.body(), object : TypeReference<List<Race>>(){})
         response.statusCode() shouldBe 200
-        feat.size shouldBeGreaterThan 0
+        backgrounds.size shouldBeGreaterThan 0
     }
 
-    "Requesting the Feats from a non-existing guild results in 404" {
+    "Requesting the Races from a non-existing guild result in 404" {
         val errorGuildId = "I_DO_NOT_EXIST"
         val request = HttpRequest.newBuilder()
             .uri(URI.create(url))
@@ -54,7 +54,7 @@ suspend fun StringSpec.featE2ETest(
         errorMessage.message shouldBe "Invalid Guild ID: $errorGuildId"
     }
 
-    "Requesting the Feats with no Guild ID should result in 400" {
+    "Requesting the Races with no Guild ID should result in 400" {
         val request = HttpRequest.newBuilder()
             .uri(URI.create(url))
             .GET()

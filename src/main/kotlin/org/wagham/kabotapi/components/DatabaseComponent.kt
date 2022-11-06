@@ -25,6 +25,8 @@ class DatabaseComponent(
 
     val backgroundsScope
         get() = database.backgroundsScope
+    val buildingsScope
+        get() = database.buildingsScope
     val charactersScope
         get() = database.charactersScope
     val featsScope
@@ -33,6 +35,8 @@ class DatabaseComponent(
         get() = database.itemsScope
     val playersScope
         get() = database.playersScope
+    val racesScope
+        get() = database.raceScope
     val spellsScope
         get() = database.spellsScope
     val subclassesScope
