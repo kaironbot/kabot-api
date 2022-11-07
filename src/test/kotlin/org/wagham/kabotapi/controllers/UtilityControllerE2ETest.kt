@@ -37,7 +37,7 @@ suspend fun StringSpec.utilityE2ETest(
         expTable.table.size shouldBeGreaterThan 0
     }
 
-    "Requesting the Spell from a non-existing guild results in 404" {
+    "Requesting the expTable from a non-existing guild results in 404" {
         val errorGuildId = "I_DO_NOT_EXIST"
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$url/expTable"))
@@ -54,7 +54,7 @@ suspend fun StringSpec.utilityE2ETest(
         errorMessage.message shouldBe "Invalid Guild ID: $errorGuildId"
     }
 
-    "Requesting the Spell with no Guild ID should result in 400" {
+    "Requesting the expTable with no Guild ID should result in 400" {
         val request = HttpRequest.newBuilder()
             .uri(URI.create("$url/expTable"))
             .GET()
