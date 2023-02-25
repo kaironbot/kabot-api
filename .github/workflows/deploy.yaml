@@ -34,7 +34,7 @@ jobs:
           CORS_TEST_ORIGIN: ${{ secrets.CORS_TEST_ORIGIN }}
           MODULE_LOCK: ${{ secrets.MODULE_LOCK }}
           RELEASE_GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-        run: gradle build
+        run: ./gradlew build
 
       - name: Creation new version (Major) 🏷️
         if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build Image and Publish to Docker Hub
         run: |
-          gradle bootBuildImage --imageName=testadirapa/kabot-api:${{ env.NEW_VERSION }}
+          ./gradlew build bootBuildImage --imageName=testadirapa/kabot-api:${{ env.NEW_VERSION }}
           docker push testadirapa/kabot-api:${{ env.NEW_VERSION }}
 
       - name: Run Api on Remote Server
