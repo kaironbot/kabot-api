@@ -25,7 +25,7 @@ jobs:
 
       - name: Grant Permissions to gradlew
         run: |
-          gradle wrapper
+          gradle wrapper --gradle-version=7.5
           chmod +x gradlew
 
       - name: Build
