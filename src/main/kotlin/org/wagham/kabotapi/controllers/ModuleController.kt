@@ -13,11 +13,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
 import org.wagham.kabotapi.dao.ReleaseDAO
+import org.wagham.kabotapi.entities.Release
+import org.wagham.kabotapi.entities.WebhookPayload
+
 
 @RestController
 @RequestMapping("/api/module")
@@ -25,16 +27,12 @@ class ModuleController(
     val releaseDAO: ReleaseDAO
 ) {
 
-    val lock: String = System.getenv("MODULE_LOCK")!!
-
     @InternalAPI
     @PostMapping("/update")
     fun updateRelease(
-        @RequestParam key: String
+        @RequestBody payload: WebhookPayload
     ) = mono {
-        if (key != lock) throw ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to update the module")
-        releaseDAO.downloadLatestRelease()
-        ResponseEntity.ok()
+        if(payload.action == "released") releaseDAO.downloadLatestRelease(payload.release.url)
     }
 
     @GetMapping("/download/manifest")

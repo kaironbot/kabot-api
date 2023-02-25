@@ -29,15 +29,15 @@ class ReleaseDAO(
     private val log = KotlinLogging.logger {}
 
     @InternalAPI
-    suspend fun downloadLatestRelease() {
+    suspend fun downloadLatestRelease(releaseURL: String) {
         releaseDir.also {
             if(!File(it).exists()) File(it).mkdirs()
         }
-        val releaseRaw = httpClient.get(" https://api.github.com/repos/ilregnodiwagham/wagham-compendium/releases") {
+        val releaseRaw = httpClient.get(releaseURL) {
             header("Authorization",  "Bearer $githubToken")
         }.body<String>()
 
-        val release = objectMapper.readValue<List<Release>>(releaseRaw).first()
+        val release = objectMapper.readValue<Release>(releaseRaw)
 
         File(releaseDir).listFiles()
             ?.firstOrNull()
