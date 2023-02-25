@@ -23,15 +23,16 @@ class ReleaseDAO(
     private val objectMapper: ObjectMapper
 ) {
 
-    private val releaseDir = "module/release".also {
-        if(!File(it).exists()) File(it).mkdirs()
-    }
+    private val releaseDir = "module/release"
     private val httpClient = HttpClient(CIO)
     private val githubToken = System.getenv("RELEASE_GITHUB_TOKEN")!!
     private val log = KotlinLogging.logger {}
 
     @InternalAPI
     suspend fun downloadLatestRelease() {
+        releaseDir.also {
+            if(!File(it).exists()) File(it).mkdirs()
+        }
         val releaseRaw = httpClient.get(" https://api.github.com/repos/ilregnodiwagham/wagham-compendium/releases") {
             header("Authorization",  "Bearer $githubToken")
         }.body<String>()
