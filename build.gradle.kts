@@ -36,7 +36,7 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation(group="org.jetbrains.kotlinx", name="kotlinx-coroutines-core", version="1.6.4")
 	implementation(group="org.jetbrains.kotlinx", name="kotlinx-coroutines-reactor", version="1.6.4")
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.4.0")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.8.0")
 	implementation(group="com.fasterxml.jackson.module", name="jackson-module-kotlin", version="2.13.4")
 	implementation(group = "io.ktor", name = "ktor-client-core", version = "2.1.3")
 	implementation(group = "io.ktor", name = "ktor-client-cio", version = "2.1.3")

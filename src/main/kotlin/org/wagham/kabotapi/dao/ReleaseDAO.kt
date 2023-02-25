@@ -27,7 +27,7 @@ class ReleaseDAO(
         if(!File(it).exists()) File(it).mkdirs()
     }
     private val httpClient = HttpClient(CIO)
-    private val githubToken = System.getenv("GITHUB_TOKEN")!!
+    private val githubToken = System.getenv("RELEASE_GITHUB_TOKEN")!!
     private val log = KotlinLogging.logger {}
 
     @InternalAPI
