@@ -26,4 +26,6 @@ jobs:
           DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
           DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
           TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
+          MODULE_LOCK: ${{ secrets.MODULE_LOCK }}
+          RELEASE_GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
         run: gradle test
