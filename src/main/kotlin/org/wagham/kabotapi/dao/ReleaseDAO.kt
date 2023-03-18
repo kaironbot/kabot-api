@@ -56,30 +56,23 @@ class ReleaseDAO(
         log.info { "Successfully download module version ${release.version}" }
     }
 
-    fun manifestAsResource(): Resource {
-        val manifest = File(releaseDir).listFiles()
+    private fun fileAsResource(selector: String): Resource {
+        val file = File(releaseDir).listFiles()
             ?.firstOrNull()
             ?.listFiles()
-            ?.firstOrNull { it.name.startsWith("module") }
-            ?: throw FileNotFoundException("Manifest not found!")
-        val resource = UrlResource(manifest.toURI())
+            ?.firstOrNull { it.name.startsWith(selector) }
+            ?: throw FileNotFoundException("File not found!")
+        val resource = UrlResource(file.toURI())
         return if (resource.exists() || resource.isReadable)
             resource
         else
-            throw FileNotFoundException("Manifest not found or unreadable!")
+            throw FileNotFoundException("File not found or unreadable!")
     }
 
-    fun moduleAsResource(): Resource {
-        val manifest = File(releaseDir).listFiles()
-            ?.firstOrNull()
-            ?.listFiles()
-            ?.firstOrNull { it.name.startsWith("Release") }
-            ?: throw FileNotFoundException("Release not found!")
-        val resource = UrlResource(manifest.toURI())
-        return if (resource.exists() || resource.isReadable)
-            resource
-        else
-            throw FileNotFoundException("Release not found or unreadable!")
-    }
+    fun manifestAsResource() = fileAsResource("module")
+
+    fun moduleAsResource() = fileAsResource("Release")
+
+    fun plutoniumModuleAsResource() = fileAsResource("wagham_compendium")
 
 }
