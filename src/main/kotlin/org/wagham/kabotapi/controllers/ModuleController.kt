@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.wagham.kabotapi.dao.ReleaseDAO
-import org.wagham.kabotapi.entities.Release
 import org.wagham.kabotapi.entities.WebhookPayload
-
 
 @RestController
 @RequestMapping("/api/module")
@@ -33,6 +31,14 @@ class ModuleController(
         @RequestBody payload: WebhookPayload
     ) = mono {
         if(payload.action == "released") releaseDAO.downloadLatestRelease(payload.release.url)
+    }
+
+    @GetMapping("/download/plutonium")
+    fun downloadPlutoniumModule(): ResponseEntity<Resource> {
+        return ResponseEntity.status(HttpStatus.OK)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=wagham_compendium.json")
+            .header(HttpHeaders.CONTENT_TYPE, "text/html; charset=utf-8")
+            .body(releaseDAO.plutoniumModuleAsResource())
     }
 
     @GetMapping("/download/manifest")
