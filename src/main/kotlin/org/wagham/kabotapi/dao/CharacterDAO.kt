@@ -1,5 +1,6 @@
 package org.wagham.kabotapi.dao
 
+import kotlinx.coroutines.flow.first
 import org.springframework.stereotype.Service
 import org.wagham.db.enums.CharacterStatus
 import org.wagham.kabotapi.components.DatabaseComponent
@@ -10,7 +11,7 @@ class CharacterDAO(
 ) {
 
     suspend fun getActiveCharacter(guildId: String, playerId: String) =
-        database.charactersScope.getActiveCharacter(guildId, playerId)
+        database.charactersScope.getActiveCharacters(guildId, playerId).first()
 
     fun getAllCharacters(guildId: String) =
         database.charactersScope.getAllCharacters(guildId)
