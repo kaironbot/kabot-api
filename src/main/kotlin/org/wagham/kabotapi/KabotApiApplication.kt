@@ -11,6 +11,7 @@ import org.springframework.boot.runApplication
 		"org.wagham.kabotapi.configuration",
 		"org.wagham.kabotapi.controllers",
 		"org.wagham.kabotapi.dao",
+		"org.wagham.kabotapi.logic",
 		"org.wagham.kabotapi.security"
 	 ],
 	exclude = [

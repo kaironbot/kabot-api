@@ -7,6 +7,8 @@ class JwtDetails(
     private val authorities: Set<GrantedAuthority>,
     val userId: String,
     val guildId: String,
+    val discordAuthToken: String,
+    val discordRefreshToken: String? = null
 ) : UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> = authorities.toMutableSet()
     override fun getPassword(): String = ""

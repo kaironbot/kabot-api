@@ -4,9 +4,9 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 
 data class JwtAuthenticationToken(
-    private val authorities: MutableSet<GrantedAuthority> = mutableSetOf(),
-    private val claims: JwtDetails,
-    private val details: Map<String, Any> = mapOf(),
+    val authorities: MutableSet<GrantedAuthority> = mutableSetOf(),
+    val claims: JwtDetails,
+    val details: Map<String, Any> = mapOf(),
     private var authenticated: Boolean = false
 ): Authentication {
     override fun getName(): String = "jwt"

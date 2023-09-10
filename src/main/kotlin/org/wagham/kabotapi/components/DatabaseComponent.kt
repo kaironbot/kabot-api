@@ -23,6 +23,9 @@ class DatabaseComponent(
         )
     )
 
+    val registeredGuilds
+        get() = database.getAllGuildsId()
+
     val backgroundsScope
         get() = database.backgroundsScope
     val buildingsScope
