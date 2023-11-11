@@ -1,25 +1,17 @@
 package org.wagham.kabotapi
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-import org.springframework.boot.runApplication
+import io.ktor.server.application.*
+import org.wagham.kabotapi.configuration.configureExceptions
+import org.wagham.kabotapi.configuration.configureHTTP
+import org.wagham.kabotapi.configuration.configureKoin
+import org.wagham.kabotapi.configuration.configureRouting
 
+fun main(args: Array<String>) = io.ktor.server.cio.EngineMain.main(args)
 
-@SpringBootApplication(
-	scanBasePackages = [
-		"org.wagham.kabotapi.components",
-		"org.wagham.kabotapi.configuration",
-		"org.wagham.kabotapi.controllers",
-		"org.wagham.kabotapi.dao",
-		"org.wagham.kabotapi.logic",
-		"org.wagham.kabotapi.security"
-	 ],
-	exclude = [
-		DataSourceAutoConfiguration::class
-	]
-)
-class KabotApiApplication
-
-fun main(args: Array<String>) {
-	runApplication<KabotApiApplication>(*args)
+@Suppress("unused")
+fun Application.module() {
+	configureHTTP()
+	configureKoin()
+	configureExceptions()
+	configureRouting()
 }

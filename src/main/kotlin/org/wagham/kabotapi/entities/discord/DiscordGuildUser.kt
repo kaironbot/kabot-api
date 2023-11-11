@@ -1,8 +1,8 @@
 package org.wagham.kabotapi.entities.discord
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class DiscordGuildUser(
     val user: DiscordGlobalUser?,
     val nick: String?,

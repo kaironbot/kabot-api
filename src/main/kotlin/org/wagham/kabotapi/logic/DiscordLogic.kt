@@ -1,69 +1,59 @@
 package org.wagham.kabotapi.logic
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import org.springframework.stereotype.Component
-import org.wagham.kabotapi.components.DatabaseComponent
-import org.wagham.kabotapi.configuration.DiscordConfiguration
 import org.wagham.kabotapi.entities.discord.DiscordAuthResponse
 import org.wagham.kabotapi.entities.discord.DiscordGlobalUser
 import org.wagham.kabotapi.entities.discord.DiscordGuildUser
 import org.wagham.kabotapi.entities.discord.DiscordPartialGuild
-import org.wagham.kabotapi.exceptions.UnauthorizedException
 
-@Component
-class DiscordLogic(
-    private val databaseComponent: DatabaseComponent,
-    private val discordConfiguration: DiscordConfiguration,
-    private val client: HttpClient,
-    private val objectMapper: ObjectMapper
-) {
+interface DiscordLogic {
 
-    suspend fun login(code: String) = client.post("${discordConfiguration.apiEndpoint}/oauth2/token") {
-            setBody(FormDataContent(Parameters.build {
-                append("client_id", discordConfiguration.clientId)
-                append("client_secret", discordConfiguration.clientSecret)
-                append("grant_type", "authorization_code")
-                append("scope", "identify")
-                append("redirect_uri", discordConfiguration.redirectUrl)
-                append("code", code)
-            }))
-        }.bodyOrUnauthorized<DiscordAuthResponse>(objectMapper, "Cannot obtain discord token")
+    /**
+     * Completes the Discord oauth authentication flow with the [code] received on the browser by the user.
+     *
+     * @param code the code received by the user on the browser.
+     * @return a [DiscordAuthResponse] if the authorization completes successfully.
+     * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to complete the authentication
+     * flow.
+     */
+    suspend fun login(code: String): DiscordAuthResponse
 
-    suspend fun refreshDiscordToken(refreshToken: String) = client.post("${discordConfiguration.apiEndpoint}/oauth2/token") {
-        setBody(FormDataContent(Parameters.build {
-            append("client_id", discordConfiguration.clientId)
-            append("client_secret", discordConfiguration.clientSecret)
-            append("grant_type", "refresh_token")
-            append("refresh_token", refreshToken)
-        }))
-    }.bodyOrUnauthorized<DiscordAuthResponse>(objectMapper, "Cannot refresh discord token")
+    /**
+     * Generate a new Discord authentication token using the refresh token.
+     *
+     * @param refreshToken the refresh token for the refresh API.
+     * @return a [DiscordAuthResponse] if the refresh completes successfully.
+     * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to complete the refresh
+     * flow.
+     */
+    suspend fun refreshDiscordToken(refreshToken: String): DiscordAuthResponse
 
-    suspend fun getCurrentGlobalUser(discordJwt: String) = client.get("${discordConfiguration.apiEndpoint}/users/@me") {
-        bearerAuth(discordJwt)
-    }.bodyOrUnauthorized<DiscordGlobalUser>(objectMapper, "Cannot get global discord user")
+    /**
+     * Retrieves the global Discord user, given the Discord API JWT.
+     * A global user contains no information related to the guilds they belong to.
+     *
+     * @param discordJwt a valid Discord API JWT.
+     * @return a [DiscordGlobalUser].
+     * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to retrieve the user.
+     */
+    suspend fun getCurrentGlobalUser(discordJwt: String): DiscordGlobalUser
 
-    suspend fun getCurrentGuildUser(discordJwt: String, guildId: String) =
-        client.get("${discordConfiguration.apiEndpoint}/users/@me/guilds/${guildId}/member") {
-            bearerAuth(discordJwt)
-        }.bodyOrUnauthorized<DiscordGuildUser>(objectMapper, "Cannot get member in guild $guildId")
+    /**
+     * Retrieves the Discord user with all the information related to a specific guild, given the Discord API JWT.
+     *
+     * @param discordJwt a valid Discord API JWT.
+     * @param guildId the Discord id of the guild where to search the user.
+     * @return a [DiscordGuildUser].
+     * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to retrieve the user.
+     */
+    suspend fun getCurrentGuildUser(discordJwt: String, guildId: String): DiscordGuildUser
 
-    suspend fun getUserGuilds(discordJwt: String) = client.get("${discordConfiguration.apiEndpoint}/users/@me/guilds") {
-        bearerAuth(discordJwt)
-    }.bodyOrUnauthorized<List<DiscordPartialGuild>>(objectMapper, "Cannot get guilds for current user").let { guilds ->
-        val registeredGuilds = databaseComponent.registeredGuilds
-        guilds.filter { registeredGuilds.contains(it.id) }
-    }
+    /**
+     * Retrieves all the guilds that the current user belongs to where KaironBot is registered.
+     *
+     * @param discordJwt a valid Discord API JWT.
+     * @return a [List] containing all the [DiscordPartialGuild] of the user where KaironBot is present.
+     * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to retrieve the guilds.
+     */
+    suspend fun getUserGuilds(discordJwt: String): List<DiscordPartialGuild>
 
-}
-
-suspend inline fun <reified T> HttpResponse.bodyOrUnauthorized(mapper: ObjectMapper, msg: String): T = try {
-    mapper.readValue<T>(bodyAsText())
-} catch (e: Exception) {
-    throw UnauthorizedException(msg)
 }
