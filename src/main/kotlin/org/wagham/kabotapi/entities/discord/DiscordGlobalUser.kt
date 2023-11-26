@@ -9,5 +9,5 @@ data class DiscordGlobalUser(
     val username: String,
     val discriminator: String,
     @SerialName("global_name") val globalName: String?,
-    val avatar: String
+    val avatar: String?
 )

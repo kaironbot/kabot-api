@@ -54,7 +54,7 @@ dependencies {
 
 	implementation(group = "org.mindrot", name = "jbcrypt", version = "0.4")
 
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.19.13")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.19.16")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
 	testImplementation(group="io.kotest", name="kotest-assertions-core-jvm", version="5.5.3")

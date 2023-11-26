@@ -22,12 +22,13 @@ fun Application.configureExceptions() {
         exception<Throwable> { call, cause ->
             when(cause) {
                 is AccessDeniedException -> call.respond(HttpStatusCode.Forbidden, cause.toErrorResponse(HttpStatusCode.Forbidden))
+                is IllegalAccessException -> call.respond(HttpStatusCode.Forbidden, cause.toErrorResponse(HttpStatusCode.Forbidden))
                 is IOException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
                 is IllegalArgumentException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
                 is UnauthorizedException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
                 is JWTException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
                 is NotFoundException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.NotFound))
-                else -> call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Something went wrong", HttpStatusCode.InternalServerError.value))
+                else -> call.respond(HttpStatusCode.InternalServerError, ErrorResponse(cause.message ?: "Something went wrong", HttpStatusCode.InternalServerError.value))
             }
         }
     }

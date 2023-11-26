@@ -10,6 +10,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.wagham.db.enums.NyxRoles
 import org.wagham.kabotapi.components.DatabaseComponent
 import org.wagham.kabotapi.entities.config.DiscordConfig
 import org.wagham.kabotapi.entities.discord.DiscordAuthResponse
@@ -72,6 +73,11 @@ class DiscordLogicImpl(
     }.bodyOrUnauthorized<List<DiscordPartialGuild>>("Cannot get guilds for current user").let { guilds ->
         val registeredGuilds = database.registeredGuilds
         guilds.filter { registeredGuilds.contains(it.id) }
+    }
+
+    override suspend fun discordRolesToNyxRoles(user: DiscordGuildUser, guildId: String): Set<NyxRoles> {
+        val nyxConfig = database.serverConfigScope.getNyxConfig(guildId)
+        return user.roles?.mapNotNull { nyxConfig.roleConfig[it] }?.toSet() ?: emptySet()
     }
 
 }

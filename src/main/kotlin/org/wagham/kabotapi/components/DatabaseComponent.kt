@@ -21,25 +21,13 @@ class DatabaseComponent(
     val registeredGuilds
         get() = database.getAllGuildsId()
 
-    val backgroundsScope
-        get() = database.backgroundsScope
-    val buildingsScope
-        get() = database.buildingsScope
-    val charactersScope
-        get() = database.charactersScope
-    val featsScope
-        get() = database.featsScope
-    val itemsScope
-        get() = database.itemsScope
-    val playersScope
-        get() = database.playersScope
-    val racesScope
-        get() = database.raceScope
-    val spellsScope
-        get() = database.spellsScope
-    val subclassesScope
-        get() = database.subclassesScope
-    val utilityScope
-        get() = database.utilityScope
+    val buildingsScope = database.buildingsScope
+    val charactersScope = database.charactersScope
+    val itemsScope = database.itemsScope
+    val labelsScope = database.labelsScope
+    val playersScope = database.playersScope
+    val serverConfigScope = database.serverConfigScope
+    val sessionScope = database.sessionScope
+    val utilityScope = database.utilityScope
 
 }

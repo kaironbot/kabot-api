@@ -1,5 +1,7 @@
 package org.wagham.kabotapi.logic
 
+import org.wagham.db.enums.NyxRoles
+import org.wagham.kabotapi.entities.GuildMember
 import org.wagham.kabotapi.entities.discord.DiscordAuthResponse
 import org.wagham.kabotapi.entities.discord.DiscordGlobalUser
 import org.wagham.kabotapi.entities.discord.DiscordGuildUser
@@ -55,5 +57,15 @@ interface DiscordLogic {
      * @throws [org.wagham.kabotapi.exceptions.UnauthorizedException] if it was not possible to retrieve the guilds.
      */
     suspend fun getUserGuilds(discordJwt: String): List<DiscordPartialGuild>
+
+    /**
+     * Converts all the roles of a [DiscordGuildUser] to a [Set] of [NyxRoles].
+     * If a discord role does not have a corresponding role in Nyx, then it is ignored.
+     *
+     * @param user a [DiscordGuildUser].
+     * @param guildId the id of the guild.
+     * @return a [Set] of [NyxRoles].
+     */
+    suspend fun discordRolesToNyxRoles(user: DiscordGuildUser, guildId: String): Set<NyxRoles>
 
 }

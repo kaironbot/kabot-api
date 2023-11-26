@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
 import io.ktor.server.auth.jwt.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.wagham.kabotapi.entities.config.JWTConfig
 import org.wagham.kabotapi.entities.security.JWTClaims
 import org.wagham.kabotapi.entities.security.JWTRefreshClaims
@@ -41,6 +43,11 @@ class JWTManager(
         .withClaim(USER_ID, jwtClaims.userId)
         .withClaim(GUILD_ID, jwtClaims.guildId)
         .withClaim(DISCORD_AUTH_TOKEN, jwtClaims.discordAuthToken)
+        .let {
+            if(jwtClaims.roles.isNotEmpty()) it.withClaim(
+                ROLES, Json.encodeToString(jwtClaims.roles)
+            ) else it
+        }
         .withExpiresAt(Date(System.currentTimeMillis() + authJWTDuration))
         .sign(Algorithm.HMAC256(config.authSecret))
 
@@ -123,7 +130,8 @@ fun Payload.toJWTClaims(): JWTClaims = try {
     JWTClaims(
         userId = getClaim(JWTManager.USER_ID).asString(),
         guildId = getClaim(JWTManager.GUILD_ID).asString(),
-        discordAuthToken = getClaim(JWTManager.DISCORD_AUTH_TOKEN).asString()
+        discordAuthToken = getClaim(JWTManager.DISCORD_AUTH_TOKEN).asString(),
+        roles = claims[JWTManager.ROLES]?.let { Json.decodeFromString(it.asString()) } ?: emptySet()
     )
 } catch(e: Exception) {
     throw JWTException(e.message ?: "Wrong JWT format")
@@ -134,7 +142,7 @@ fun Payload.toJWTClaims(): JWTClaims = try {
  *
  * @receiver payload a [Payload].
  * @return a [JWTRefreshClaims]
- * @throws JWTException if it the JWT is in the wrong format.
+ * @throws JWTException if the JWT is in the wrong format.
  */
 fun Payload.toJWTRefreshClaims(): JWTRefreshClaims = try {
     JWTRefreshClaims(
