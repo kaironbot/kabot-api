@@ -9,8 +9,9 @@ interface SessionLogic {
      * KaironBot to communicate that a new session has been registered.
      *
      * @param guildId the id of the guild where to register the session.
+     * @param responsibleId the id of the Discord id that inserted the session.
      * @param sessionInfo a [SessionRegistrationDto] instance.
      */
-    suspend fun insertSession(guildId: String, sessionInfo: SessionRegistrationDto)
+    suspend fun insertSession(guildId: String, responsibleId: String, sessionInfo: SessionRegistrationDto)
 
 }

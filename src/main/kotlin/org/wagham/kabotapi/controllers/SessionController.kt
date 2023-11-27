@@ -19,6 +19,7 @@ fun Routing.sessionController() = route("/session") {
         val body = call.receive<SessionRegistrationDto>()
         sessionLogic.insertSession(
             it.guildId,
+            it.userId,
             body
         )
         call.respond(SuccessResponse(true))
