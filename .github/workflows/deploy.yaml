@@ -15,51 +15,44 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
-
-      - name: Get current version (last tag)
-        id: version
-        run: echo "VERSION=$(git tag --sort=taggerdate | tail -1)" >> $GITHUB_OUTPUT
-
-      - name: Creation new version (Major) 🏷️
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
-        id: bump_version_major
-        uses: christian-draeger/increment-semantic-version@1.0.3
         with:
-          current-version: ${{ steps.version.outputs.VERSION }}
-          version-fragment: 'major'
+          fetch-depth: 0
+
+      - name: Get Previous tag
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+
+      - name: Test
+        run: echo ${{ steps.previoustag.outputs.tag }}
+
+      - name: Get next versions
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+
+      - name: Test 2
+        run: | 
+          echo ${{ steps.semvers.outputs.patch }}
+          echo ${{ steps.semvers.outputs.minor }}
+          echo ${{ steps.semvers.outputs.major }}
 
       - name: Update major version
         if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
-        run: echo "NEW_VERSION=${{ steps.bump_version_major.outputs.next-version }}" >> $GITHUB_ENV
-
-      - name: Creation new version (Minor) 🏷️
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
-        id: bump_version_minor
-        uses: christian-draeger/increment-semantic-version@1.0.3
-        with:
-          current-version: ${{ steps.version.outputs.VERSION }}
-          version-fragment: 'feature'
+        run: echo "NEW_VERSION=${{ steps.semvers.outputs.major }}" >> $GITHUB_ENV
 
       - name: Update minor version
         if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
-        run: echo "NEW_VERSION=${{ steps.bump_version_minor.outputs.next-version }}" >> $GITHUB_ENV
-
-      - name: Creation new version (Patch) 🏷️
-        if: ${{ contains(github.event.pull_request.labels.*.name, 'patch') }}
-        id: bump_version_patch
-        uses: christian-draeger/increment-semantic-version@1.0.3
-        with:
-          current-version: ${{ steps.version.outputs.VERSION }}
-          version-fragment: 'bug'
+        run: echo "NEW_VERSION=${{ steps.semvers.outputs.minor }}" >> $GITHUB_ENV
 
       - name: Update patch version
         if: ${{ contains(github.event.pull_request.labels.*.name, 'patch') }}
-        run: echo "NEW_VERSION=${{ steps.bump_version_patch.outputs.next-version }}" >> $GITHUB_ENV
+        run: echo "NEW_VERSION=${{ steps.semvers.outputs.patch }}" >> $GITHUB_ENV
 
-      - name: Upload Release
-        uses: ncipollo/release-action@v1
-        with:
-          body: ${{ github.event.pull_request.body }}
-          tag: ${{ steps.new-version.outputs.NEW_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+      #- name: Upload Release
+      #  uses: ncipollo/release-action@v1
+      #  with:
+      #    body: ${{ github.event.pull_request.body }}
+      #    tag: ${{ steps.new-version.outputs.NEW_VERSION }}
+      #    token: ${{ secrets.GITHUB_TOKEN }}
 
