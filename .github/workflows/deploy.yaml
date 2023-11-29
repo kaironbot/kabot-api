@@ -4,83 +4,62 @@ on:
   pull_request:
     types:
       - closed
+      - opened
+      - synchronize
+      - reopened
     branches:
       - 'main'
 
-
+# github.event.pull_request.merged == true &&
 jobs:
   deploy_on_docker:
     name: Deploy
-    if: github.event.pull_request.merged == true && (contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'patch'))
+    if: (contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'patch'))
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: Setup JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-
-      - name: Grant Permissions to gradlew
-        run: |
-          gradle wrapper --gradle-version=7.5
-          chmod +x gradlew
-
-      - name: Build
-        env:
-          DB_ADMIN_IP: ${{ secrets.DB_ADMIN_IP }}
-          DB_ADMIN_NAME: ${{ secrets.DB_ADMIN_NAME }}
-          DB_ADMIN_PORT: ${{ secrets.DB_ADMIN_PORT }}
-          DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
-          DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
-          TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
-          MODULE_LOCK: ${{ secrets.MODULE_LOCK }}
-          RELEASE_GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-        run: ./gradlew build
+      - name: Get current version (last tag)
+        id: version
+        run: echo "VERSION=$(git tag --sort=taggerdate | tail -1)" >> $GITHUB_OUTPUT
 
       - name: Creation new version (Major) 🏷️
         if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
-        run: ./gradlew incrementVersion --versionIncrementType=MAJOR --versionIncrementBranch=main -PgitUserName=TestaDiRapa -PgitUserEmail=v.c.pierro@gmail.com
+        id: bump_version_major
+        uses: christian-draeger/increment-semantic-version@1.0.3
+        with:
+          current-version: ${{ steps.version.outputs.VERSION }}
+          version-fragment: 'major'
+
+      - name: Update major version
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'major') }}
+        run: echo "NEW_VERSION=${{ steps.bump_version_major.outputs.next-version }}" >> $GITHUB_ENV
+
       - name: Creation new version (Minor) 🏷️
         if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
-        run: ./gradlew incrementVersion --versionIncrementType=MINOR --versionIncrementBranch=main -PgitUserName=TestaDiRapa -PgitUserEmail=v.c.pierro@gmail.com
+        id: bump_version_minor
+        uses: christian-draeger/increment-semantic-version@1.0.3
+        with:
+          current-version: ${{ steps.version.outputs.VERSION }}
+          version-fragment: 'feature'
+
+      - name: Update minor version
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'minor') }}
+        run: echo "NEW_VERSION=${{ steps.bump_version_minor.outputs.next-version }}" >> $GITHUB_ENV
+
       - name: Creation new version (Patch) 🏷️
         if: ${{ contains(github.event.pull_request.labels.*.name, 'patch') }}
-        run: ./gradlew incrementVersion --versionIncrementType=PATCH --versionIncrementBranch=main -PgitUserName=TestaDiRapa -PgitUserEmail=v.c.pierro@gmail.com
-
-      - name: Save version to env
-        run: echo "NEW_VERSION=$(gradle printLibVersion | grep -o '[0-9]\+.[0-9]\+.[0-9]\+')" >> $GITHUB_ENV
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        id: bump_version_patch
+        uses: christian-draeger/increment-semantic-version@1.0.3
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          current-version: ${{ steps.version.outputs.VERSION }}
+          version-fragment: 'bug'
 
-      - name: Build Image and Publish to Docker Hub
-        env:
-          DB_ADMIN_IP: ${{ secrets.DB_ADMIN_IP }}
-          DB_ADMIN_NAME: ${{ secrets.DB_ADMIN_NAME }}
-          DB_ADMIN_PORT: ${{ secrets.DB_ADMIN_PORT }}
-          DB_ADMIN_PWD: ${{ secrets.DB_ADMIN_PWD }}
-          DB_ADMIN_USER: ${{ secrets.DB_ADMIN_USER }}
-          TEST_DB_ID: ${{ secrets.TEST_DB_ID }}
-          MODULE_LOCK: ${{ secrets.MODULE_LOCK }}
-          RELEASE_GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-        run: |
-          ./gradlew build bootBuildImage --imageName=testadirapa/kabot-api:${{ env.NEW_VERSION }}
-          docker push testadirapa/kabot-api:${{ env.NEW_VERSION }}
+      - name: Update patch version
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'patch') }}
+        run: echo "NEW_VERSION=${{ steps.bump_version_patch.outputs.next-version }}" >> $GITHUB_ENV
 
-      - name: Run Api on Remote Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            docker rm -f -v kabot-api
-            docker image prune -a -f
-            docker run -d --name kabot-api -p 16170:16170 --env-file /home/waghambot/kabotapi.env testadirapa/kabot-api:${{ env.NEW_VERSION }}
+      - name: Print version for test
+        run: echo ${{ env.NEW_VERSION }}
+
