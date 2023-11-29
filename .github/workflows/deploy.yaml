@@ -4,17 +4,13 @@ on:
   pull_request:
     types:
       - closed
-      - opened
-      - synchronize
-      - reopened
     branches:
       - 'main'
 
-# github.event.pull_request.merged == true &&
 jobs:
   deploy_on_docker:
     name: Deploy
-    if: (contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'patch'))
+    if: github.event.pull_request.merged == true && (contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'patch'))
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -60,6 +56,10 @@ jobs:
         if: ${{ contains(github.event.pull_request.labels.*.name, 'patch') }}
         run: echo "NEW_VERSION=${{ steps.bump_version_patch.outputs.next-version }}" >> $GITHUB_ENV
 
-      - name: Print version for test
-        run: echo ${{ env.NEW_VERSION }}
+      - name: Upload Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ github.event.pull_request.body }}
+          tag: ${{ steps.new-version.outputs.NEW_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
