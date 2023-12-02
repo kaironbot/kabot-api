@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import kotlinx.serialization.json.Json
@@ -33,6 +34,7 @@ class ExternalGateway(
      */
     suspend fun sendRegisteredSession(guildId: String, sessionId: String) {
         client.post("$kabotUrl/session") {
+            contentType(ContentType.Application.Json)
             setBody(RegisteredSessionDto(guildId, sessionId))
         }
     }
@@ -45,6 +47,7 @@ class ExternalGateway(
      */
     suspend fun sendLevelUpInfo(guildId: String, outcomes: List<SessionOutcome>) {
         client.post("$kabotUrl/levelUp") {
+            contentType(ContentType.Application.Json)
             setBody(LevelUpDto(guildId, outcomes.associate { it.characterId to it.exp.toFloat() }))
         }
     }
