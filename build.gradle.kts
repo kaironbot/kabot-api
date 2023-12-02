@@ -54,7 +54,7 @@ dependencies {
 
 	implementation(group = "org.mindrot", name = "jbcrypt", version = "0.4")
 
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.19.17")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.19.18")
 	implementation("org.litote.kmongo:kmongo-coroutine:4.7.0")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
