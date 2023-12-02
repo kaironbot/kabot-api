@@ -15,8 +15,8 @@ class SessionLogicImpl(
         val sessionId = UUID.randomUUID().toString()
         database.sessionScope.insertSession(
             guildId,
-            sessionInfo.masterId,
             sessionId,
+            sessionInfo.masterId,
             sessionInfo.masterReward,
             sessionInfo.title,
             Date(sessionInfo.date),
