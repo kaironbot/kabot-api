@@ -8,8 +8,8 @@ val koinKtorVersion = "3.5.0"
 version = "0.6.0"
 plugins {
 	id("io.ktor.plugin") version "2.3.4"
-	id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10"
-	kotlin("jvm") version "1.9.10"
+	id("org.jetbrains.kotlin.plugin.serialization") version "1.9.20"
+	kotlin("jvm") version "1.9.20"
 }
 
 repositories {
@@ -54,8 +54,8 @@ dependencies {
 
 	implementation(group = "org.mindrot", name = "jbcrypt", version = "0.4")
 
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.19.18")
-	implementation("org.litote.kmongo:kmongo-coroutine:4.7.0")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.20.4")
+	implementation(group="org.litote.kmongo", name="kmongo-coroutine", version = "4.7.0")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
 	testImplementation(group="io.kotest", name="kotest-assertions-core-jvm", version="5.5.3")
@@ -66,8 +66,13 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "19"
 	}
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_19
+	targetCompatibility = JavaVersion.VERSION_19
 }
 
 tasks.withType<Test> {

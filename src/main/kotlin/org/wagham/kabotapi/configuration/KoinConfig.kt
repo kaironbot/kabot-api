@@ -30,7 +30,7 @@ fun applicationModules(
     single<ExternalGateway> { ExternalGateway(config) }
     single<DatabaseComponent> { DatabaseComponent(dbConfig) }
     single<DiscordLogic> { DiscordLogicImpl(get(), discordConfig)}
-    single<CharacterLogic> { CharacterLogicImpl(get()) }
+    single<CharacterLogic> { CharacterLogicImpl(get(), get()) }
     single<LabelLogic> { LabelLogicImpl(get()) }
     single<SessionLogic> { SessionLogicImpl(get(), get()) }
 }
