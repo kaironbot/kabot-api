@@ -77,7 +77,7 @@ class DiscordLogicImpl(
 
     override suspend fun discordRolesToNyxRoles(user: DiscordGuildUser, guildId: String): Set<NyxRoles> {
         val nyxConfig = database.serverConfigScope.getNyxConfig(guildId)
-        return user.roles?.mapNotNull { nyxConfig.roleConfig[it] }?.toSet() ?: emptySet()
+        return user.roles?.flatMap { nyxConfig.roleConfig[it] ?: emptySet() }?.toSet() ?: emptySet()
     }
 
 }

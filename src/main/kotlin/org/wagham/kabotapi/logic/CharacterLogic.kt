@@ -2,7 +2,9 @@ package org.wagham.kabotapi.logic
 
 import kotlinx.coroutines.flow.Flow
 import org.wagham.db.models.Character
+import org.wagham.db.models.Errata
 import org.wagham.db.pipelines.characters.CharacterWithPlayer
+import org.wagham.kabotapi.entities.StatusResponse
 
 interface CharacterLogic {
 
@@ -30,5 +32,15 @@ interface CharacterLogic {
      * @return a [Flow] containing all the active [Character]s in the guild.
      */
     fun getAllActiveCharactersWithPlayer(guildId: String): Flow<CharacterWithPlayer>
+
+    /**
+     * Adds an [Errata] to a character, identified by its id, in a guild.
+     *
+     * @param guildId the id of the guild of the character.
+     * @param characterId the id of the character to update.
+     * @param errata the [Errata] to add.
+     * @return a [StatusResponse].
+     */
+    suspend fun addErrata(guildId: String, characterId: String, errata: Errata): StatusResponse
 
 }
