@@ -1,5 +1,6 @@
 package org.wagham.kabotapi.logic.impl
 
+import org.wagham.db.models.dto.SessionOutcome
 import org.wagham.kabotapi.components.DatabaseComponent
 import org.wagham.kabotapi.components.ExternalGateway
 import org.wagham.kabotapi.entities.dto.SessionRegistrationDto
@@ -29,7 +30,10 @@ class SessionLogicImpl(
             }
         }
         gateway.sendRegisteredSession(guildId, sessionId)
-        gateway.sendLevelUpInfo(guildId, sessionInfo.outcomes)
+        gateway.sendLevelUpInfo(
+            guildId,
+            sessionInfo.outcomes + SessionOutcome(sessionInfo.masterId, sessionInfo.masterReward, false)
+        )
     }
 
 

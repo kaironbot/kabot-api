@@ -21,8 +21,9 @@ fun Application.configureRouting() {
     routing {
         authController()
         characterController()
-        labelController()
         guildController()
+        itemController()
+        labelController()
         sessionController()
     }
 }

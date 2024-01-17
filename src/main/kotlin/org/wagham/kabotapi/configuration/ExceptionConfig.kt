@@ -4,6 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
+import org.wagham.db.exceptions.ResourceNotFoundException
 import org.wagham.kabotapi.entities.StatusResponse
 import org.wagham.kabotapi.exceptions.JWTException
 import org.wagham.kabotapi.exceptions.NotFoundException
@@ -29,6 +30,7 @@ fun Application.configureExceptions() {
                 is UnauthorizedException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
                 is JWTException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
                 is NotFoundException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.NotFound))
+                is ResourceNotFoundException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.NotFound))
                 else -> call.respond(HttpStatusCode.InternalServerError, StatusResponse(false, cause.message ?: "Something went wrong", HttpStatusCode.InternalServerError.value))
             }
         }
