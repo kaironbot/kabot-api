@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ktorVersion = "2.3.4"
 val kotlinVersion = "1.9.10"
-val logbackVersion = "1.4.11"
+val logbackVersion = "1.4.12"
 val koinKtorVersion = "3.5.0"
 
 version = "0.6.0"
@@ -54,7 +54,7 @@ dependencies {
 
 	implementation(group = "org.mindrot", name = "jbcrypt", version = "0.4")
 
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.20.4")
+	implementation(group="org.wagham", name="kabot-db-connector", version="0.20.7")
 	implementation(group="org.litote.kmongo", name="kmongo-coroutine", version = "4.7.0")
 
 	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")

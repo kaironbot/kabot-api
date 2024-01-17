@@ -13,10 +13,12 @@ import org.wagham.kabotapi.entities.config.JWTConfig
 import org.wagham.kabotapi.entities.config.MongoConfig
 import org.wagham.kabotapi.logic.CharacterLogic
 import org.wagham.kabotapi.logic.DiscordLogic
+import org.wagham.kabotapi.logic.ItemLogic
 import org.wagham.kabotapi.logic.LabelLogic
 import org.wagham.kabotapi.logic.SessionLogic
 import org.wagham.kabotapi.logic.impl.CharacterLogicImpl
 import org.wagham.kabotapi.logic.impl.DiscordLogicImpl
+import org.wagham.kabotapi.logic.impl.ItemLogicImpl
 import org.wagham.kabotapi.logic.impl.LabelLogicImpl
 import org.wagham.kabotapi.logic.impl.SessionLogicImpl
 
@@ -33,6 +35,7 @@ fun applicationModules(
     single<CharacterLogic> { CharacterLogicImpl(get(), get()) }
     single<LabelLogic> { LabelLogicImpl(get()) }
     single<SessionLogic> { SessionLogicImpl(get(), get()) }
+    single<ItemLogic> { ItemLogicImpl(get()) }
 }
 
 /**

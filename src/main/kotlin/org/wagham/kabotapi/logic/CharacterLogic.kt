@@ -9,13 +9,24 @@ import org.wagham.kabotapi.entities.StatusResponse
 interface CharacterLogic {
 
     /**
-     * Retrieves all the active characters for a player ina guild.
+     * Retrieves all the active [Character]s for a player in a guild.
      *
      * @param guildId the guild id. It is the unique identifier for a Discord server.
      * @param playerId the player id. It is the unique identifier for a Discord user.
      * @return a [Flow] containing all the active [Character]s for the player in the guild.
      */
     fun getActiveCharacters(guildId: String, playerId: String): Flow<Character>
+
+    /**
+     * Retrieves a [Character] for a player.
+     *
+     * @param guildId the guild id. It is the unique identifier for a Discord server.
+     * @param playerId the player id. It is the unique identifier for a Discord user.
+     * @param characterId the character id.
+     * @return the retrieved [Character]
+     * @throws IllegalAccessException if the [Character.player] is different from [playerId].
+     */
+    suspend fun getCharacter(guildId: String, playerId: String, characterId: String): Character
 
     /**
      * Returns all the active characters in a guild.

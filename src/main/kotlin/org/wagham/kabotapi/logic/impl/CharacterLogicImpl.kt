@@ -18,6 +18,14 @@ class CharacterLogicImpl(
     override fun getActiveCharacters(guildId: String, playerId: String) =
         database.charactersScope.getActiveCharacters(guildId, playerId)
 
+    override suspend fun getCharacter(guildId: String, playerId: String, characterId: String): Character {
+        val character = database.charactersScope.getCharacter(guildId, characterId)
+        if(character.player != playerId) {
+            throw IllegalAccessException("You are not allowed to get this character")
+        }
+        return character
+    }
+
     override fun getAllActiveCharacters(guildId: String): Flow<Character> =
         database.charactersScope.getAllCharacters(guildId, CharacterStatus.active)
 
