@@ -14,7 +14,7 @@ import org.wagham.kabotapi.exceptions.JWTException
 import org.wagham.kabotapi.exceptions.UnauthorizedException
 import java.util.*
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class JWTManager(
     val config: JWTConfig
@@ -26,7 +26,7 @@ class JWTManager(
         const val ROLES = "r"
         const val DISCORD_AUTH_TOKEN = "dJwt"
         const val DISCORD_REFRESH_TOKEN = "rJwt"
-        private val authJWTDuration = 1L.hours.inWholeMilliseconds
+        private val authJWTDuration = 60L.minutes.inWholeMilliseconds
         private val refreshJWTDuration = 30L.days.inWholeMilliseconds
     }
 

@@ -1,7 +1,9 @@
 package org.wagham.kabotapi.components
 
+import com.mongodb.reactivestreams.client.ClientSession
 import org.wagham.db.KabotMultiDBClient
 import org.wagham.db.models.MongoCredentials
+import org.wagham.db.models.client.TransactionResult
 import org.wagham.kabotapi.entities.config.MongoConfig
 
 class DatabaseComponent(
@@ -21,7 +23,6 @@ class DatabaseComponent(
     val registeredGuilds
         get() = database.getAllGuildsId()
 
-    val buildingsScope = database.buildingsScope
     val charactersScope = database.charactersScope
     val itemsScope = database.itemsScope
     val labelsScope = database.labelsScope
@@ -29,5 +30,12 @@ class DatabaseComponent(
     val serverConfigScope = database.serverConfigScope
     val sessionScope = database.sessionScope
     val utilityScope = database.utilityScope
+    val transactionsScope = database.characterTransactionsScope
+
+    suspend fun transaction(
+        guildId: String,
+        retries: Long = 3,
+        block: suspend (ClientSession) -> Boolean
+    ): TransactionResult = database.transaction(guildId, retries, block)
 
 }

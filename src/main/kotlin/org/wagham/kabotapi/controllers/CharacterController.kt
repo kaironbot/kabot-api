@@ -7,6 +7,8 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.flow.toList
 import org.koin.ktor.ext.inject
 import org.wagham.db.models.Errata
+import org.wagham.kabotapi.entities.StatusResponse
+import org.wagham.kabotapi.entities.dto.items.UpdateInventoryDto
 import org.wagham.kabotapi.logic.CharacterLogic
 import org.wagham.kabotapi.utils.authenticatedGet
 import org.wagham.kabotapi.utils.authenticatedPost
@@ -44,5 +46,14 @@ fun Routing.characterController() = route("/character") {
         }
         val response = characterLogic.addErrata(it.guildId, characterId, errata)
         call.respond(response)
+    }
+
+    authenticatedPost("/{characterId}/inventory") {
+        val characterId = checkNotNull(call.parameters["characterId"]) {
+            "Character Id must not be null"
+        }
+        val payload = call.receive<UpdateInventoryDto>()
+        characterLogic.updateInventory(it.guildId, it.userId, characterId, payload)
+        call.respond(StatusResponse(true))
     }
 }

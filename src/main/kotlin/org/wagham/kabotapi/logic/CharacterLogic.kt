@@ -5,6 +5,7 @@ import org.wagham.db.models.Character
 import org.wagham.db.models.Errata
 import org.wagham.db.pipelines.characters.CharacterWithPlayer
 import org.wagham.kabotapi.entities.StatusResponse
+import org.wagham.kabotapi.entities.dto.items.UpdateInventoryDto
 
 interface CharacterLogic {
 
@@ -53,5 +54,18 @@ interface CharacterLogic {
      * @return a [StatusResponse].
      */
     suspend fun addErrata(guildId: String, characterId: String, errata: Errata): StatusResponse
+
+    /**
+     * Updates the inventory of a character.
+     *
+     * @param guildId the id of the guild.
+     * @param playerId the id of the player.
+     * @param characterId the id of the character.
+     * @param updateData a [UpdateInventoryDto] containing the necessary information to update the inventory.
+     * @throws IllegalAccessException if the [Character.player] is different from [playerId].
+     * @throws IllegalArgumentException if the character does not have the requirement to complete the operation.
+     * @throws org.wagham.kabotapi.exceptions.NotFoundException If the specified item does not exist.
+     */
+    suspend fun updateInventory(guildId: String, playerId: String, characterId: String, updateData: UpdateInventoryDto)
 
 }
