@@ -24,6 +24,7 @@ class DatabaseComponent(
         get() = database.getAllGuildsId()
 
     val charactersScope = database.charactersScope
+    val sheetScope = database.characterSheetsScope
     val itemsScope = database.itemsScope
     val labelsScope = database.labelsScope
     val playersScope = database.playersScope
@@ -35,7 +36,7 @@ class DatabaseComponent(
     suspend fun transaction(
         guildId: String,
         retries: Long = 3,
-        block: suspend (ClientSession) -> Boolean
+        block: suspend (ClientSession) -> Map<String, Boolean>
     ): TransactionResult = database.transaction(guildId, retries, block)
 
 }

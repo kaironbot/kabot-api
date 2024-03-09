@@ -50,3 +50,23 @@ fun Route.authenticatedPost(
         }
     }
 }
+
+/**
+ * Extends the default behaviour of [get] by automatically parsing the payload of the JWT from the principal.
+ */
+fun Route.authenticatedDelete(
+    path: String,
+    ctx: String = AUTH_CTX,
+    roles: Set<NyxRoles> = emptySet(),
+    block: suspend PipelineContext<Unit, ApplicationCall>.(JWTClaims) -> Unit
+): Route = authenticate(ctx) {
+    delete(path) {
+        val claims = call.principal<JWTPrincipal>()?.payload?.toJWTClaims()
+            ?: throw JWTException("No JWT passed in the request")
+        if(roles.isNotEmpty() || claims.roles.containsAll(roles)) {
+            block(claims)
+        } else {
+            throw IllegalAccessException("You are not authorized to access this endpoint")
+        }
+    }
+}
