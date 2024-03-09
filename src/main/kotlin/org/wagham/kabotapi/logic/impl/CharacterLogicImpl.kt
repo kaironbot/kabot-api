@@ -5,9 +5,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import org.wagham.db.enums.CharacterStatus
 import org.wagham.db.enums.TransactionType
 import org.wagham.db.models.Character
+import org.wagham.db.models.CharacterSheet
 import org.wagham.db.models.Errata
 import org.wagham.db.models.Item
 import org.wagham.db.models.dto.SessionOutcome
+import org.wagham.db.models.embed.CharacterToken
 import org.wagham.db.models.embed.Transaction
 import org.wagham.db.pipelines.characters.CharacterWithPlayer
 import org.wagham.kabotapi.components.DatabaseComponent
@@ -17,6 +19,7 @@ import org.wagham.kabotapi.entities.dto.items.UpdateInventoryDto
 import org.wagham.kabotapi.entities.dto.items.UpdateInventoryDto.Companion.InventoryUpdate
 import org.wagham.kabotapi.exceptions.NotFoundException
 import org.wagham.kabotapi.logic.CharacterLogic
+import org.wagham.kabotapi.utils.MimeType
 import org.wagham.kabotapi.utils.transactionMoney
 import java.util.*
 
@@ -24,6 +27,9 @@ class CharacterLogicImpl(
     private val database: DatabaseComponent,
     private val gateway: ExternalGateway
 ): CharacterLogic {
+
+    private val base64Encoder = Base64.getEncoder()
+
     override fun getActiveCharacters(guildId: String, playerId: String) =
         database.charactersScope.getActiveCharacters(guildId, playerId)
 
@@ -69,7 +75,11 @@ class CharacterLogicImpl(
             ) && database.transactionsScope.addTransactionForCharacter(
                 session, guildId, character.id, Transaction(Date(), null, "SELL", TransactionType.REMOVE, mapOf(item.name to qty.toFloat()))
             )
-            itemRemoved && moneyAdded && transactionRegistered
+            mapOf(
+                "itemRemoved" to itemRemoved,
+                "moneyAdded" to moneyAdded,
+                "transactionRegistered" to transactionRegistered
+            )
         }.also {
             if (it.exception != null) throw it.exception!!
         }
@@ -90,4 +100,22 @@ class CharacterLogicImpl(
             InventoryUpdate.TAKE -> throw IllegalStateException("Operation not implemented yet")
         }
     }
+
+    override suspend fun setCharacterToken(guildId: String, playerId: String, characterId: String, token: ByteArray, mimeType: MimeType): Boolean {
+        val character = database.charactersScope.getCharacter(guildId, characterId)
+        if(character.player != playerId) {
+            throw IllegalAccessException("You are not allowed to get this character")
+        }
+        return database.sheetScope.setToken(guildId, characterId, base64Encoder.encodeToString(token), mimeType.mimeType)
+    }
+
+    override suspend fun getCharacterSheet(guildId: String, characterId: String): CharacterSheet =
+        database.sheetScope.getCharacterSheet(guildId, characterId)
+            ?: throw NotFoundException("Sheet not found for character $characterId")
+
+    override suspend fun getCharacterToken(guildId: String, characterId: String): CharacterToken =
+        getCharacterSheet(guildId, characterId).token
+            ?: throw NotFoundException("Token not found for character $characterId")
+
+
 }

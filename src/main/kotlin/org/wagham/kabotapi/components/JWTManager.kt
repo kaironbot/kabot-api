@@ -124,7 +124,7 @@ class JWTManager(
  *
  * @receiver payload a [Payload].
  * @return a [JWTClaims]
- * @throws JWTException if it the JWT is in the wrong format.
+ * @throws JWTException if the JWT is in the wrong format.
  */
 fun Payload.toJWTClaims(): JWTClaims = try {
     JWTClaims(

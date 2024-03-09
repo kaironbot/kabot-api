@@ -2,10 +2,13 @@ package org.wagham.kabotapi.logic
 
 import kotlinx.coroutines.flow.Flow
 import org.wagham.db.models.Character
+import org.wagham.db.models.CharacterSheet
 import org.wagham.db.models.Errata
+import org.wagham.db.models.embed.CharacterToken
 import org.wagham.db.pipelines.characters.CharacterWithPlayer
 import org.wagham.kabotapi.entities.StatusResponse
 import org.wagham.kabotapi.entities.dto.items.UpdateInventoryDto
+import org.wagham.kabotapi.utils.MimeType
 
 interface CharacterLogic {
 
@@ -68,4 +71,36 @@ interface CharacterLogic {
      */
     suspend fun updateInventory(guildId: String, playerId: String, characterId: String, updateData: UpdateInventoryDto)
 
+    /**
+     * Updates the character token in their sheet.
+     *
+     * @param guildId the id of the guild.
+     * @param playerId the id of the player.
+     * @param characterId the id of the character.
+     * @param token the character token image to upload.
+     * @param mimeType the [MimeType] of the image.
+     * @return true if the operation succeeds, false otherwise.
+     * @throws IllegalAccessException if the [Character.player] is different from [playerId].
+     */
+    suspend fun setCharacterToken(guildId: String, playerId: String, characterId: String, token: ByteArray, mimeType: MimeType): Boolean
+
+    /**
+     * Retrieves the character token in their sheet.
+     *
+     * @param guildId the id of the guild.
+     * @param characterId the id of the character.
+     * @return the [CharacterToken]
+     * @throws org.wagham.kabotapi.exceptions.NotFoundException If the specified character token does not exist.
+     */
+    suspend fun getCharacterToken(guildId: String, characterId: String): CharacterToken
+
+    /**
+     * Retrieves the [CharacterSheet] for a character in a guild.
+     *
+     * @param guildId the id of the guild.
+     * @param characterId the id of the character.
+     * @return a [CharacterSheet]
+     * @throws org.wagham.kabotapi.exceptions.NotFoundException If the specified character sheet does not exist.
+     */
+    suspend fun getCharacterSheet(guildId: String, characterId: String): CharacterSheet
 }

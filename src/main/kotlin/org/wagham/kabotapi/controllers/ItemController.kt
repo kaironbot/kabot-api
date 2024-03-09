@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.flow.toSet
 import org.koin.ktor.ext.inject
+import org.wagham.db.models.embed.LabelStub
 import org.wagham.kabotapi.entities.dto.ListOfIdsDto
 import org.wagham.kabotapi.logic.ItemLogic
 import org.wagham.kabotapi.utils.authenticatedGet
@@ -19,6 +20,23 @@ fun Routing.itemController() = route("/item") {
     authenticatedGet("") {
         val items = itemLogic.getItems(it.guildId).toList()
         call.respond(items)
+    }
+
+    authenticatedPost("/search") {
+        val limit = call.request.queryParameters["limit"]?.toInt()
+        val nextAt = call.request.queryParameters["nextAt"]?.toInt()
+        val query = call.request.queryParameters["query"]
+        val label = try {
+            call.receiveNullable<LabelStub>()
+        } catch (_: Exception) { null }
+        val paginatedItems = itemLogic.searchItems(
+            guildId = it.guildId,
+            label = label,
+            query = query,
+            limit = limit,
+            skip = nextAt
+        )
+        call.respond(paginatedItems)
     }
 
     authenticatedPost("/byIds") {

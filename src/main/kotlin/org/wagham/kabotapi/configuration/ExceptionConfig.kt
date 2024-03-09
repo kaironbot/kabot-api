@@ -29,7 +29,7 @@ fun Application.configureExceptions() {
                 is IllegalArgumentException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
                 is UnauthorizedException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
                 is JWTException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
-                is NotFoundException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.NotFound))
+                is NotFoundException -> call.respond(HttpStatusCode.NotFound, cause.toErrorResponse(HttpStatusCode.NotFound))
                 is ResourceNotFoundException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.NotFound))
                 else -> call.respond(HttpStatusCode.InternalServerError, StatusResponse(false, cause.message ?: "Something went wrong", HttpStatusCode.InternalServerError.value))
             }

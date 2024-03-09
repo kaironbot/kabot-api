@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ktorVersion = "2.3.4"
+val ktorVersion = "2.3.7"
 val kotlinVersion = "1.9.10"
 val logbackVersion = "1.4.12"
 val koinKtorVersion = "3.5.0"
@@ -15,22 +15,22 @@ plugins {
 repositories {
 	mavenCentral()
 	gradlePluginPortal()
-	maven { url = uri("https://repo.repsy.io/mvn/testadirapa/kabot") }
 }
 
 application {
 	mainClass.set("org.wagham.kabotapi.KabotApiApplicationKt")
 }
 
-
 group = "org.wagham"
 
-
 dependencies {
+	implementation(project(":kabot-db-connector"))
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation(group="org.jetbrains.kotlinx", name="kotlinx-coroutines-core", version="1.6.4")
-	implementation(group="org.jetbrains.kotlinx", name="kotlinx-coroutines-reactor", version="1.6.4")
+	implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.7.3")
+	implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-reactor", version = "1.7.3")
+	implementation(group = "com.github.ben-manes.caffeine", name = "caffeine", version = "3.1.8")
+	implementation(group = "org.apache.tika", name = "tika-core", version = "2.9.1")
 
 	implementation(group = "io.ktor", name = "ktor-server-core-jvm", version = ktorVersion)
 	implementation(group = "io.ktor", name = "ktor-server-cors-jvm", version = ktorVersion)
@@ -54,13 +54,12 @@ dependencies {
 
 	implementation(group = "org.mindrot", name = "jbcrypt", version = "0.4")
 
-	implementation(group="org.wagham", name="kabot-db-connector", version="0.20.7")
 	implementation(group="org.litote.kmongo", name="kmongo-coroutine", version = "4.7.0")
 
-	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.4.2")
+	testImplementation(group = "org.junit.jupiter", name = "junit-jupiter", version = "5.10.1")
 	testImplementation(group="io.kotest", name="kotest-assertions-core-jvm", version="5.5.3")
 	testImplementation(group="io.kotest", name="kotest-framework-engine-jvm", version="5.5.3")
-	testImplementation(group = "io.kotest.extensions", name = "kotest-extensions-spring", version = "1.1.2")
+	testImplementation(group = "io.kotest.extensions", name = "kotest-extensions-spring", version = "1.1.3")
 }
 
 tasks.withType<KotlinCompile> {
