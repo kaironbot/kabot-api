@@ -60,7 +60,7 @@ class CharacterLogicImpl(
             throw IllegalArgumentException("You don't have enough ${item.name} to sell")
         }
         database.transaction(guildId) { session ->
-            val itemRemoved = database.charactersScope.removeItemFromInventory(
+            database.charactersScope.removeItemFromInventory(
                 session,
                 guildId,
                 character.id,
@@ -68,17 +68,13 @@ class CharacterLogicImpl(
                 qty
             )
             val cost = requireNotNull(item.sell?.cost) { "This item cannot be sold" } * qty
-            val moneyAdded = database.charactersScope.addMoney(session, guildId, character.id, cost)
-            val transactionRegistered = database.transactionsScope.addTransactionForCharacter(
+            database.charactersScope.addMoney(session, guildId, character.id, cost)
+            database.transactionsScope.addTransactionForCharacter(
                 session, guildId, character.id, Transaction(
                     Date(), null, "SELL", TransactionType.ADD, mapOf(transactionMoney to cost))
-            ) && database.transactionsScope.addTransactionForCharacter(
-                session, guildId, character.id, Transaction(Date(), null, "SELL", TransactionType.REMOVE, mapOf(item.name to qty.toFloat()))
             )
-            mapOf(
-                "itemRemoved" to itemRemoved,
-                "moneyAdded" to moneyAdded,
-                "transactionRegistered" to transactionRegistered
+            database.transactionsScope.addTransactionForCharacter(
+                session, guildId, character.id, Transaction(Date(), null, "SELL", TransactionType.REMOVE, mapOf(item.name to qty.toFloat()))
             )
         }.also {
             if (it.exception != null) throw it.exception!!
