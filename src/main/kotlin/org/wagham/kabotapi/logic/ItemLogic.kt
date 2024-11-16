@@ -49,4 +49,29 @@ interface ItemLogic {
      */
     suspend fun searchItems(guildId: String, label: LabelStub? = null, query: String? = null, limit: Int? = null, skip: Int? = null): PaginatedList<Item>
 
+    /**
+     * Creates an item in a guild.
+     *
+     * @param guildId the id of the guild where to create the item.
+     * @param item the item to create.
+     */
+    suspend fun createItem(guildId: String, item: Item)
+
+    /**
+     * Deletes an item in a guild, also removing it from the inventory of all players.
+     *
+     * @param guildId the id of the guild where to delete the item.
+     * @param item the [Item.name] of the item to delete.
+     */
+    suspend fun deleteItem(guildId: String, item: String)
+
+    /**
+     * Updates an item ina guild. If the item was renamed, it also renames it in the inventory of all players.
+     *
+     * @param guildId the id of the guild where to delete the item.
+     * @param item the [Item] to update.
+     * @param originalName if the item was renamed, the original name of the item.
+     */
+    suspend fun updateItem(guildId: String, item: Item, originalName: String)
+
 }

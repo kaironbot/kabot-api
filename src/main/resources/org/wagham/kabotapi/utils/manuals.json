@@ -1,0 +1,14 @@
+[
+  { "name": "Player's Handbook", "abbreviation": "PHB" },
+  { "name": "Explorer's Guide to Wildemount", "abbreviation": "XGW" },
+  { "name": "Xanathar's Guide to Everything", "abbreviation": "XGTE" },
+  { "name": "Fizban's Treasury of Dragons", "abbreviation": "FTD" },
+  { "name": "Tasha's Cauldron of Everything", "abbreviation": "TCE" },
+  { "name": "DLSDQ", "abbreviation": "DLSDQ" },
+  { "name": "Mordenkainen's Tome of Foes", "abbreviation": "MTF" },
+  { "name": "Sword Coast Adventurer's Guide", "abbreviation": "SCAG" },
+  { "name": "VRGR", "abbreviation": "VRGR" },
+  { "name": "Dungeon Master's Guide", "abbreviation": "DMG" },
+  { "name": "SCC", "abbreviation": "SCC" },
+  { "name": "Homebrew", "abbreviation": "HB" }
+]
