@@ -72,7 +72,7 @@ fun Routing.itemController() = route("/item") {
         call.respond(StatusResponse(true))
     }
 
-    authenticatedDelete("/{itemId}", roles = setOf(NyxRoles.MANAGE_ITEMS)) {
+    authenticatedDelete("/{itemId}", roles = setOf(NyxRoles.DELETE_ITEMS)) {
         val itemId = checkNotNull(call.parameters["itemId"]) {
             "Item Id must not be null"
         }
