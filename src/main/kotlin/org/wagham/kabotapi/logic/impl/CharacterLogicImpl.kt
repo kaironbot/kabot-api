@@ -24,94 +24,111 @@ import org.wagham.kabotapi.utils.transactionMoney
 import java.util.*
 
 class CharacterLogicImpl(
-    private val database: DatabaseComponent,
-    private val gateway: ExternalGateway
+	private val database: DatabaseComponent,
+	private val gateway: ExternalGateway
 ): CharacterLogic {
 
-    private val base64Encoder = Base64.getEncoder()
+	private val base64Encoder = Base64.getEncoder()
 
-    override fun getActiveCharacters(guildId: String, playerId: String) =
-        database.charactersScope.getActiveCharacters(guildId, playerId)
+	override fun getActiveCharacters(guildId: String, playerId: String) =
+		database.charactersScope.getActiveCharacters(guildId, playerId)
 
-    override suspend fun getCharacter(guildId: String, playerId: String, characterId: String): Character {
-        val character = database.charactersScope.getCharacter(guildId, characterId)
-        if(character.player != playerId) {
-            throw IllegalAccessException("You are not allowed to get this character")
-        }
-        return character
-    }
+	override suspend fun getCharacter(guildId: String, playerId: String, characterId: String): Character {
+		val character = database.charactersScope.getCharacter(guildId, characterId)
+		if(character.player != playerId) {
+			throw IllegalAccessException("You are not allowed to get this character")
+		}
+		return character
+	}
 
-    override fun getAllActiveCharacters(guildId: String): Flow<Character> =
-        database.charactersScope.getAllCharacters(guildId, CharacterStatus.active)
+	override fun getAllActiveCharacters(guildId: String): Flow<Character> =
+		database.charactersScope.getAllCharacters(guildId, CharacterStatus.active)
 
-    override fun getAllActiveCharactersWithPlayer(guildId: String): Flow<CharacterWithPlayer> =
-        database.charactersScope.getCharactersWithPlayer(guildId, CharacterStatus.active)
+	override fun getAllActiveCharactersWithPlayer(guildId: String): Flow<CharacterWithPlayer> =
+		database.charactersScope.getCharactersWithPlayer(guildId, CharacterStatus.active)
 
-    override suspend fun addErrata(guildId: String, characterId: String, errata: Errata): StatusResponse {
-        val result = database.charactersScope.addErrata(guildId, characterId, errata)
-        if(result.committed) {
-            gateway.sendLevelUpInfo(guildId, listOf(SessionOutcome(characterId, errata.ms, errata.statusChange == CharacterStatus.dead)))
-        }
-        return StatusResponse(result.committed, result.exception?.message)
-    }
+	override suspend fun addErrata(guildId: String, characterId: String, errata: Errata): StatusResponse {
+		val result = database.charactersScope.addErrata(guildId, characterId, errata)
+		if(result.committed) {
+			gateway.sendLevelUpInfo(guildId, listOf(SessionOutcome(characterId, errata.ms, errata.statusChange == CharacterStatus.dead)))
+		}
+		return StatusResponse(result.committed, result.exception?.message)
+	}
 
-    private suspend fun sellItem(guildId: String, character: Character, item: Item, qty: Int) {
-        if(character.inventory.getOrDefault(item.name, 0) < qty) {
-            throw IllegalArgumentException("You don't have enough ${item.name} to sell")
-        }
-        database.transaction(guildId) { session ->
-            database.charactersScope.removeItemFromInventory(
-                session,
-                guildId,
-                character.id,
-                item.name,
-                qty
-            )
-            val cost = requireNotNull(item.sell?.cost) { "This item cannot be sold" } * qty
-            database.charactersScope.addMoney(session, guildId, character.id, cost)
-            database.transactionsScope.addTransactionForCharacter(
-                session, guildId, character.id, Transaction(
-                    Date(), null, "SELL", TransactionType.ADD, mapOf(transactionMoney to cost))
-            )
-            database.transactionsScope.addTransactionForCharacter(
-                session, guildId, character.id, Transaction(Date(), null, "SELL", TransactionType.REMOVE, mapOf(item.name to qty.toFloat()))
-            )
-        }.also {
-            if (it.exception != null) throw it.exception!!
-        }
-    }
+	private suspend fun assignItem(guildId: String, character: Character, item: Item, qty: Int) {
+		database.transaction(guildId) { session ->
+			val currentQty = character.inventory.getOrDefault(item.name, 0)
+			database.charactersScope.addItemToInventory(
+				session,
+				guildId,
+				character.id,
+				item.name,
+				currentQty + qty,
+			)
+			database.transactionsScope.addTransactionForCharacter(
+				session, guildId, character.id, Transaction(
+					Date(), null, "ASSIGN", TransactionType.ADD, mapOf(item.name to qty.toFloat()))
+			)
+		}
+	}
 
-    override suspend fun updateInventory(guildId: String, playerId: String, characterId: String, updateData: UpdateInventoryDto) {
-        val character = database.charactersScope.getCharacter(guildId, characterId)
-        if(character.player != playerId) {
-            throw IllegalAccessException("You are not allowed to get this character")
-        }
-        val item = database.itemsScope.getItems(guildId, setOf(updateData.itemId)).firstOrNull()
-            ?: throw NotFoundException("Item not found: ${updateData.itemId}")
+	private suspend fun sellItem(guildId: String, character: Character, item: Item, qty: Int) {
+		if(character.inventory.getOrDefault(item.name, 0) < qty) {
+			throw IllegalArgumentException("You don't have enough ${item.name} to sell")
+		}
+		database.transaction(guildId) { session ->
+			database.charactersScope.removeItemFromInventory(
+				session,
+				guildId,
+				character.id,
+				item.name,
+				qty
+			)
+			val cost = requireNotNull(item.sell?.cost) { "This item cannot be sold" } * qty
+			database.charactersScope.addMoney(session, guildId, character.id, cost)
+			database.transactionsScope.addTransactionForCharacter(
+				session, guildId, character.id, Transaction(
+					Date(), null, "SELL", TransactionType.ADD, mapOf(transactionMoney to cost))
+			)
+			database.transactionsScope.addTransactionForCharacter(
+				session, guildId, character.id, Transaction(Date(), null, "SELL", TransactionType.REMOVE, mapOf(item.name to qty.toFloat()))
+			)
+		}.also {
+			if (it.exception != null) throw it.exception!!
+		}
+	}
 
-        when(updateData.operation) {
-            InventoryUpdate.BUY -> throw IllegalStateException("Operation not implemented yet")
-            InventoryUpdate.SELL -> sellItem(guildId, character, item, updateData.qty)
-            InventoryUpdate.ASSIGN -> throw IllegalStateException("Operation not implemented yet")
-            InventoryUpdate.TAKE -> throw IllegalStateException("Operation not implemented yet")
-        }
-    }
+	override suspend fun updateInventory(guildId: String, playerId: String, characterId: String, updateData: UpdateInventoryDto) {
+		val character = database.charactersScope.getCharacter(guildId, characterId)
+		if(character.player != playerId) {
+			throw IllegalAccessException("You are not allowed to get this character")
+		}
+		val item = database.itemsScope.getItems(guildId, setOf(updateData.itemId)).firstOrNull()
+			?: throw NotFoundException("Item not found: ${updateData.itemId}")
 
-    override suspend fun setCharacterToken(guildId: String, playerId: String, characterId: String, token: ByteArray, mimeType: MimeType): Boolean {
-        val character = database.charactersScope.getCharacter(guildId, characterId)
-        if(character.player != playerId) {
-            throw IllegalAccessException("You are not allowed to get this character")
-        }
-        return database.sheetScope.setToken(guildId, characterId, base64Encoder.encodeToString(token), mimeType.mimeType)
-    }
+		when(updateData.operation) {
+			InventoryUpdate.BUY -> throw IllegalStateException("Operation not implemented yet")
+			InventoryUpdate.SELL -> sellItem(guildId, character, item, updateData.qty)
+			InventoryUpdate.ASSIGN -> assignItem(guildId, character, item, updateData.qty)
+			InventoryUpdate.TAKE -> throw IllegalStateException("Operation not implemented yet")
+		}
+	}
 
-    override suspend fun getCharacterSheet(guildId: String, characterId: String): CharacterSheet =
-        database.sheetScope.getCharacterSheet(guildId, characterId)
-            ?: throw NotFoundException("Sheet not found for character $characterId")
+	override suspend fun setCharacterToken(guildId: String, playerId: String, characterId: String, token: ByteArray, mimeType: MimeType): Boolean {
+		val character = database.charactersScope.getCharacter(guildId, characterId)
+		if(character.player != playerId) {
+			throw IllegalAccessException("You are not allowed to get this character")
+		}
+		return database.sheetScope.setToken(guildId, characterId, base64Encoder.encodeToString(token), mimeType.mimeType)
+	}
 
-    override suspend fun getCharacterToken(guildId: String, characterId: String): CharacterToken =
-        getCharacterSheet(guildId, characterId).token
-            ?: throw NotFoundException("Token not found for character $characterId")
+	override suspend fun getCharacterSheet(guildId: String, characterId: String): CharacterSheet =
+		database.sheetScope.getCharacterSheet(guildId, characterId)
+			?: throw NotFoundException("Sheet not found for character $characterId")
+
+	override suspend fun getCharacterToken(guildId: String, characterId: String): CharacterToken =
+		getCharacterSheet(guildId, characterId).token
+			?: throw NotFoundException("Token not found for character $characterId")
 
 
 }
