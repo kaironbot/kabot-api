@@ -130,5 +130,6 @@ class CharacterLogicImpl(
 		getCharacterSheet(guildId, characterId).token
 			?: throw NotFoundException("Token not found for character $characterId")
 
-
+	override fun getCharactersForPlayer(guildId: String, playerId: String): Flow<Character> =
+		database.charactersScope.getCharacters(guildId, playerId)
 }
