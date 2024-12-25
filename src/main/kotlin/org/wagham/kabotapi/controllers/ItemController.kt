@@ -97,5 +97,12 @@ fun Routing.itemController() = route("/item") {
 		call.respond(DnDSourceList.manuals)
 	}
 
+	authenticatedGet("/{itemId}/usage") {
+		val itemId = checkNotNull(call.parameters["itemId"]) {
+			"Item Id must not be null"
+		}
+		val onlyActive = call.request.queryParameters["onlyActive"]?.toBoolean() ?: true
+		call.respond(itemLogic.usedBy(it.guildId, itemId, onlyActive))
+	}
 
 }

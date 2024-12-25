@@ -3,6 +3,7 @@ package org.wagham.kabotapi.logic.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import org.wagham.db.models.Character
 import org.wagham.db.models.Item
 import org.wagham.db.models.embed.LabelStub
 import org.wagham.db.utils.StringNormalizer
@@ -90,4 +91,6 @@ class ItemLogicImpl(
 		}
 	}
 
+	override fun usedBy(guildId: String, itemName: String, onlyActive: Boolean): Flow<Character> =
+		database.itemsScope.getCharactersWithItem(guildId, itemName, onlyActive)
 }

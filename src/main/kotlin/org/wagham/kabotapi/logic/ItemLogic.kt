@@ -1,6 +1,7 @@
 package org.wagham.kabotapi.logic
 
 import kotlinx.coroutines.flow.Flow
+import org.wagham.db.models.Character
 import org.wagham.db.models.GenericSession
 import org.wagham.db.models.Item
 import org.wagham.db.models.Player
@@ -84,5 +85,15 @@ interface ItemLogic {
 	 * @param originalName if the item was renamed, the original name of the item.
 	 */
 	suspend fun updateItem(guildId: String, item: Item, originalName: String)
+
+	/**
+	 * Retrieves all the [Character] that have in [Character.inventory] the specified item.
+	 *
+	 * @param guildId the id of the guild.
+	 * @param itemName the item to search.
+	 * @param onlyActive whether to return only active characters.
+	 * @return a [Flow] of [Character]s.
+	 */
+	fun usedBy(guildId: String, itemName: String, onlyActive: Boolean): Flow<Character>
 
 }
