@@ -15,27 +15,30 @@ import org.wagham.kabotapi.logic.CharacterLogic
 import org.wagham.kabotapi.logic.DiscordLogic
 import org.wagham.kabotapi.logic.ItemLogic
 import org.wagham.kabotapi.logic.LabelLogic
+import org.wagham.kabotapi.logic.PlayerLogic
 import org.wagham.kabotapi.logic.SessionLogic
 import org.wagham.kabotapi.logic.impl.CharacterLogicImpl
 import org.wagham.kabotapi.logic.impl.DiscordLogicImpl
 import org.wagham.kabotapi.logic.impl.ItemLogicImpl
 import org.wagham.kabotapi.logic.impl.LabelLogicImpl
+import org.wagham.kabotapi.logic.impl.PlayerLogicImpl
 import org.wagham.kabotapi.logic.impl.SessionLogicImpl
 
 fun applicationModules(
-    config: ApplicationConfig,
-    dbConfig: MongoConfig,
-    jwtConfig: JWTConfig,
-    discordConfig: DiscordConfig
+	config: ApplicationConfig,
+	dbConfig: MongoConfig,
+	jwtConfig: JWTConfig,
+	discordConfig: DiscordConfig
 ) = module {
-    single<JWTManager> { JWTManager(jwtConfig) }
-    single<ExternalGateway> { ExternalGateway(config) }
-    single<DatabaseComponent> { DatabaseComponent(dbConfig) }
-    single<DiscordLogic> { DiscordLogicImpl(get(), discordConfig)}
-    single<CharacterLogic> { CharacterLogicImpl(get(), get()) }
-    single<LabelLogic> { LabelLogicImpl(get()) }
-    single<SessionLogic> { SessionLogicImpl(get(), get()) }
-    single<ItemLogic> { ItemLogicImpl(get()) }
+	single<JWTManager> { JWTManager(jwtConfig) }
+	single<ExternalGateway> { ExternalGateway(config) }
+	single<DatabaseComponent> { DatabaseComponent(dbConfig) }
+	single<DiscordLogic> { DiscordLogicImpl(get(), discordConfig)}
+	single<CharacterLogic> { CharacterLogicImpl(get(), get()) }
+	single<LabelLogic> { LabelLogicImpl(get()) }
+	single<SessionLogic> { SessionLogicImpl(get(), get()) }
+	single<ItemLogic> { ItemLogicImpl(get()) }
+	single<PlayerLogic> { PlayerLogicImpl(get()) }
 }
 
 /**
@@ -45,12 +48,12 @@ fun applicationModules(
  */
 fun Application.configureKoin() {
 
-    val dbConfig = MongoConfig.fromConfig(environment.config)
-    val jwtConfig = JWTConfig.fromConfig(environment.config)
-    val discordConfig = DiscordConfig.fromConfig(environment.config)
+	val dbConfig = MongoConfig.fromConfig(environment.config)
+	val jwtConfig = JWTConfig.fromConfig(environment.config)
+	val discordConfig = DiscordConfig.fromConfig(environment.config)
 
-    install(Koin) {
-        slf4jLogger()
-        modules(applicationModules(environment.config, dbConfig, jwtConfig, discordConfig))
-    }
+	install(Koin) {
+		slf4jLogger()
+		modules(applicationModules(environment.config, dbConfig, jwtConfig, discordConfig))
+	}
 }

@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import org.wagham.db.enums.NyxRoles
 import org.wagham.db.models.Errata
 import org.wagham.db.models.embed.CharacterToken
 import org.wagham.kabotapi.entities.StatusResponse
@@ -16,6 +17,7 @@ import org.wagham.kabotapi.utils.FileUtils
 import org.wagham.kabotapi.utils.MimeType
 import org.wagham.kabotapi.utils.authenticatedGet
 import org.wagham.kabotapi.utils.authenticatedPost
+import org.wagham.kabotapi.utils.guard
 import java.time.Duration
 
 fun Routing.characterController() = route("/character") {
@@ -67,6 +69,11 @@ fun Routing.characterController() = route("/character") {
 			"Character Id must not be null"
 		}
 		val payload = call.receive<UpdateInventoryDto>()
+		if (payload.operation == UpdateInventoryDto.Companion.InventoryUpdate.ASSIGN) {
+			guard(it.roles.contains(NyxRoles.MANAGE_CHARACTERS)) {
+				"You are not allowed to assign items"
+			}
+		}
 		characterLogic.updateInventory(it.guildId, it.userId, characterId, payload)
 		call.respond(StatusResponse(true))
 	}

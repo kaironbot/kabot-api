@@ -72,7 +72,10 @@ class CharacterLogicImpl(
 		}
 	}
 
-	private suspend fun sellItem(guildId: String, character: Character, item: Item, qty: Int) {
+	private suspend fun sellItem(guildId: String, playerId: String, character: Character, item: Item, qty: Int) {
+		if(character.player != playerId) {
+			throw IllegalAccessException("You are not allowed to get this character")
+		}
 		if(character.inventory.getOrDefault(item.name, 0) < qty) {
 			throw IllegalArgumentException("You don't have enough ${item.name} to sell")
 		}
@@ -100,15 +103,12 @@ class CharacterLogicImpl(
 
 	override suspend fun updateInventory(guildId: String, playerId: String, characterId: String, updateData: UpdateInventoryDto) {
 		val character = database.charactersScope.getCharacter(guildId, characterId)
-		if(character.player != playerId) {
-			throw IllegalAccessException("You are not allowed to get this character")
-		}
 		val item = database.itemsScope.getItems(guildId, setOf(updateData.itemId)).firstOrNull()
 			?: throw NotFoundException("Item not found: ${updateData.itemId}")
 
 		when(updateData.operation) {
 			InventoryUpdate.BUY -> throw IllegalStateException("Operation not implemented yet")
-			InventoryUpdate.SELL -> sellItem(guildId, character, item, updateData.qty)
+			InventoryUpdate.SELL -> sellItem(guildId, playerId, character, item, updateData.qty)
 			InventoryUpdate.ASSIGN -> assignItem(guildId, character, item, updateData.qty)
 			InventoryUpdate.TAKE -> throw IllegalStateException("Operation not implemented yet")
 		}

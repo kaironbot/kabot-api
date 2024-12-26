@@ -11,19 +11,20 @@ import org.wagham.kabotapi.serializers.TimestampDateSerializer
 import java.util.Date
 
 fun Application.configureRouting() {
-    install(ContentNegotiation) {
-        json(Json {
-            serializersModule = SerializersModule {
-                contextual(Date::class) { TimestampDateSerializer }
-            }
-        })
-    }
-    routing {
-        authController()
-        characterController()
-        guildController()
-        itemController()
-        labelController()
-        sessionController()
-    }
+	install(ContentNegotiation) {
+		json(Json {
+			serializersModule = SerializersModule {
+				contextual(Date::class) { TimestampDateSerializer }
+			}
+		})
+	}
+	routing {
+		authController()
+		characterController()
+		guildController()
+		itemController()
+		labelController()
+		sessionController()
+		playerController()
+	}
 }
