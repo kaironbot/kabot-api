@@ -26,5 +26,6 @@ fun Application.configureRouting() {
 		labelController()
 		sessionController()
 		playerController()
+		utilitiesController()
 	}
 }

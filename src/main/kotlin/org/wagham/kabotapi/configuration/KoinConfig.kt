@@ -17,12 +17,14 @@ import org.wagham.kabotapi.logic.ItemLogic
 import org.wagham.kabotapi.logic.LabelLogic
 import org.wagham.kabotapi.logic.PlayerLogic
 import org.wagham.kabotapi.logic.SessionLogic
+import org.wagham.kabotapi.logic.UtilitiesLogic
 import org.wagham.kabotapi.logic.impl.CharacterLogicImpl
 import org.wagham.kabotapi.logic.impl.DiscordLogicImpl
 import org.wagham.kabotapi.logic.impl.ItemLogicImpl
 import org.wagham.kabotapi.logic.impl.LabelLogicImpl
 import org.wagham.kabotapi.logic.impl.PlayerLogicImpl
 import org.wagham.kabotapi.logic.impl.SessionLogicImpl
+import org.wagham.kabotapi.logic.impl.UtilitiesLogicImpl
 
 fun applicationModules(
 	config: ApplicationConfig,
@@ -39,6 +41,7 @@ fun applicationModules(
 	single<SessionLogic> { SessionLogicImpl(get(), get()) }
 	single<ItemLogic> { ItemLogicImpl(get()) }
 	single<PlayerLogic> { PlayerLogicImpl(get()) }
+	single<UtilitiesLogic> { UtilitiesLogicImpl(get()) }
 }
 
 /**
