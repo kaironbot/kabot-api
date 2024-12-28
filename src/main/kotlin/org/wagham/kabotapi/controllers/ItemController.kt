@@ -22,67 +22,87 @@ import org.wagham.kabotapi.utils.authenticatedPost
 import org.wagham.kabotapi.utils.authenticatedPut
 
 fun Routing.itemController() = route("/item") {
-    val itemLogic by inject<ItemLogic>()
+	val itemLogic by inject<ItemLogic>()
 
-    authenticatedGet("") {
-        val items = itemLogic.getItems(it.guildId).toList()
-        call.respond(items)
-    }
+	authenticatedGet("") {
+		val items = itemLogic.getItems(it.guildId).toList()
+		call.respond(items)
+	}
 
-    authenticatedPost("/search") {
-        val limit = call.request.queryParameters["limit"]?.toInt()
-        val nextAt = call.request.queryParameters["nextAt"]?.toInt()
-        val query = call.request.queryParameters["query"]
-        val label = try {
-            call.receiveNullable<LabelStub>()
-        } catch (_: Exception) { null }
-        val paginatedItems = itemLogic.searchItems(
-            guildId = it.guildId,
-            label = label,
-            query = query,
-            limit = limit,
-            skip = nextAt
-        )
-        call.respond(paginatedItems)
-    }
+	authenticatedPost("/search") {
+		val limit = call.request.queryParameters["limit"]?.toInt()
+		val nextAt = call.request.queryParameters["nextAt"]?.toInt()
+		val query = call.request.queryParameters["query"]
+		val label = try {
+			call.receiveNullable<LabelStub>()
+		} catch (_: Exception) { null }
+		val paginatedItems = itemLogic.searchItems(
+			guildId = it.guildId,
+			label = label,
+			query = query,
+			limit = limit,
+			skip = nextAt
+		)
+		call.respond(paginatedItems)
+	}
 
-    authenticatedPost("/byIds") {
-        val ids = call.receive<ListOfIdsDto>().ids
-        val items = itemLogic.getItems(it.guildId, ids).toList()
-        call.respond(items)
-    }
+	authenticatedPost("/ids") {
+		val query = call.request.queryParameters["query"]
+		val labels = try {
+			call.receiveNullable<List<LabelStub>>() ?: emptyList()
+		} catch (_: Exception) { emptyList() }
+		val itemIds = itemLogic.listItemIds(
+			guildId = it.guildId,
+			labels = labels,
+			query = query,
+		)
+		call.respond(itemIds)
+	}
 
-    authenticatedGet("/materialsBy/{itemId}") {
-        val itemId = checkNotNull(call.parameters["itemId"]) {
-            "Item Id must not be null"
-        }
-        val materials = itemLogic.isMaterialOf(it.guildId, itemId).map { item -> item.name }.toSet()
-        call.respond(ListOfIdsDto(materials))
-    }
+	authenticatedPost("/byIds") {
+		val ids = call.receive<ListOfIdsDto>().ids
+		val items = itemLogic.getItems(it.guildId, ids).toList()
+		call.respond(items)
+	}
 
-    authenticatedPost("", roles = setOf(NyxRoles.MANAGE_ITEMS)) {
-        val itemToCreate = call.receive<Item>()
-        itemLogic.createItem(it.guildId, itemToCreate)
-        call.respond(StatusResponse(true))
-    }
+	authenticatedGet("/materialsBy/{itemId}") {
+		val itemId = checkNotNull(call.parameters["itemId"]) {
+			"Item Id must not be null"
+		}
+		val materials = itemLogic.isMaterialOf(it.guildId, itemId).map { item -> item.name }.toSet()
+		call.respond(ListOfIdsDto(materials))
+	}
 
-    authenticatedPut("", roles = setOf(NyxRoles.MANAGE_ITEMS)) {
-        val itemToUpdate = call.receive<ItemUpdate>()
-        itemLogic.updateItem(it.guildId, itemToUpdate.item, itemToUpdate.originalName)
-        call.respond(StatusResponse(true))
-    }
+	authenticatedPost("", roles = setOf(NyxRoles.MANAGE_ITEMS)) {
+		val itemToCreate = call.receive<Item>()
+		itemLogic.createItem(it.guildId, itemToCreate)
+		call.respond(StatusResponse(true))
+	}
 
-    authenticatedDelete("/{itemId}", roles = setOf(NyxRoles.DELETE_ITEMS)) {
-        val itemId = checkNotNull(call.parameters["itemId"]) {
-            "Item Id must not be null"
-        }
-        itemLogic.deleteItem(it.guildId, itemId)
-        call.respond(StatusResponse(true))
-    }
+	authenticatedPut("", roles = setOf(NyxRoles.MANAGE_ITEMS)) {
+		val itemToUpdate = call.receive<ItemUpdate>()
+		itemLogic.updateItem(it.guildId, itemToUpdate.item, itemToUpdate.originalName)
+		call.respond(StatusResponse(true))
+	}
 
-    authenticatedGet("/sources") {
-        call.respond(DnDSourceList.manuals)
-    }
+	authenticatedDelete("/{itemId}", roles = setOf(NyxRoles.DELETE_ITEMS)) {
+		val itemId = checkNotNull(call.parameters["itemId"]) {
+			"Item Id must not be null"
+		}
+		itemLogic.deleteItem(it.guildId, itemId)
+		call.respond(StatusResponse(true))
+	}
 
+	authenticatedGet("/sources") {
+		call.respond(DnDSourceList.manuals)
+	}
+
+	authenticatedGet("/{itemId}/usage") {
+		val itemId = checkNotNull(call.parameters["itemId"]) {
+			"Item Id must not be null"
+		}
+		val onlyActive = call.request.queryParameters["onlyActive"]?.toBoolean() ?: true
+		call.respond(itemLogic.usedBy(it.guildId, itemId, onlyActive))
+	}
 
 }
