@@ -1,10 +1,8 @@
 package org.wagham.kabotapi.utils
 
-import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
 import org.wagham.db.enums.NyxRoles
 import org.wagham.kabotapi.components.toJWTClaims
 import org.wagham.kabotapi.configuration.AUTH_CTX
@@ -18,7 +16,7 @@ fun Route.authenticatedGet(
 	path: String,
 	ctx: String = AUTH_CTX,
 	roles: Set<NyxRoles> = emptySet(),
-	block: suspend PipelineContext<Unit, ApplicationCall>.(JWTClaims) -> Unit
+	block: suspend RoutingContext.(JWTClaims) -> Unit
 ): Route = authenticate(ctx) {
 	get(path) {
 		val claims = call.principal<JWTPrincipal>()?.payload?.toJWTClaims()
@@ -38,7 +36,7 @@ fun Route.authenticatedPost(
 	path: String,
 	ctx: String = AUTH_CTX,
 	roles: Set<NyxRoles> = emptySet(),
-	block: suspend PipelineContext<Unit, ApplicationCall>.(JWTClaims) -> Unit
+	block: suspend RoutingContext.(JWTClaims) -> Unit
 ): Route = authenticate(ctx) {
 	post(path) {
 		val claims = call.principal<JWTPrincipal>()?.payload?.toJWTClaims()
@@ -58,7 +56,7 @@ fun Route.authenticatedDelete(
 	path: String,
 	ctx: String = AUTH_CTX,
 	roles: Set<NyxRoles> = emptySet(),
-	block: suspend PipelineContext<Unit, ApplicationCall>.(JWTClaims) -> Unit
+	block: suspend RoutingContext.(JWTClaims) -> Unit
 ): Route = authenticate(ctx) {
 	delete(path) {
 		val claims = call.principal<JWTPrincipal>()?.payload?.toJWTClaims()
@@ -78,7 +76,7 @@ fun Route.authenticatedPut(
 	path: String,
 	ctx: String = AUTH_CTX,
 	roles: Set<NyxRoles> = emptySet(),
-	block: suspend PipelineContext<Unit, ApplicationCall>.(JWTClaims) -> Unit
+	block: suspend RoutingContext.(JWTClaims) -> Unit
 ): Route = authenticate(ctx) {
 	put(path) {
 		val claims = call.principal<JWTPrincipal>()?.payload?.toJWTClaims()
