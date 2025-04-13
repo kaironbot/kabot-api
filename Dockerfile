@@ -1,4 +1,4 @@
-FROM gradle:8.0-jdk19 AS build
+FROM gradle:8.12.0-jdk21 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle buildFatJar --no-daemon
