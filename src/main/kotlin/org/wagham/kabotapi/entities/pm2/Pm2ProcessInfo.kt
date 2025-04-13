@@ -1,4 +1,4 @@
-package org.wagham.kabotapi.model.pm2
+package org.wagham.kabotapi.entities.pm2
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

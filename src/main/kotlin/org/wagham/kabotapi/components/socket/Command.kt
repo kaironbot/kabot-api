@@ -1,7 +1,7 @@
 package org.wagham.kabotapi.components.socket
 
 import kotlinx.serialization.json.Json
-import org.wagham.kabotapi.model.pm2.Pm2ProcessInfo
+import org.wagham.kabotapi.entities.pm2.Pm2ProcessInfo
 
 sealed class Command <R> (
 	val ts: Long,

@@ -44,8 +44,14 @@ fun applicationModules(
 	single<JWTManager> { JWTManager(jwtConfig) }
 	single<ExternalGateway> { ExternalGateway(config) }
 	single<DatabaseComponent> { DatabaseComponent(dbConfig) }
-	single<CommandComponent> { CommandComponent(socketConfig.commandSendPort, socketConfig.commandReceivePort) }
-	single<NginxLogsListener> { NginxLogsListener(socketConfig.logsReceivePort) }
+	single<CommandComponent> {
+		CommandComponent(
+			sendPort = socketConfig.commandSendPort,
+			receivePort = socketConfig.commandReceivePort,
+			enableLogging = socketConfig.commandLogsEnabled
+		)
+	}
+	single<NginxLogsListener> { NginxLogsListener(socketConfig.logsReceivePort, socketConfig.nginxLogsEnabled) }
 	single<InstanceConfigManager> { InstanceConfigManager(foundryConfig.instanceFolder) }
 	single<InstanceInactivityManager> {
 		InstanceInactivityManager(
@@ -54,6 +60,7 @@ fun applicationModules(
 			nginxLogsListener = get<NginxLogsListener>(),
 			instanceConfigManager = get<InstanceConfigManager>(),
 			excludedInstances = foundryConfig.excludedInstances,
+			enableLogging = foundryConfig.enableLogging,
 		)
 	}
 

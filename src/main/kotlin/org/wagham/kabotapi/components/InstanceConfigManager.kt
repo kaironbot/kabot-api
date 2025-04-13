@@ -7,7 +7,7 @@ import io.github.irgaly.kfswatch.KfsEvent
 import io.ktor.util.logging.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.wagham.kabotapi.model.foundry.FoundryOptions
+import org.wagham.kabotapi.entities.foundry.FoundryOptions
 import java.io.File
 
 class InstanceConfigManager(

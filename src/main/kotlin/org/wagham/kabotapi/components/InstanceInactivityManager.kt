@@ -23,7 +23,8 @@ class InstanceInactivityManager(
 	private val commandComponent: CommandComponent,
 	private val nginxLogsListener: NginxLogsListener,
 	private val instanceConfigManager: InstanceConfigManager,
-	private val excludedInstances: Set<String>
+	private val excludedInstances: Set<String>,
+	private val enableLogging: Boolean,
 ) {
 
 	private val urlExtractingRegex = Regex(".* \"https://fnd\\.kaironbot\\.net/([^/]+).*")
@@ -33,6 +34,9 @@ class InstanceInactivityManager(
 		.expireAfterWrite(instanceTtl.toJavaDuration())
 		.evictionListener { target: String?, _: Long?, _: RemovalCause ->
 			if (target != null) {
+				if (enableLogging) {
+					logger.info("Sending stop signal for $target")
+				}
 				managerScope.launch {
 					commandComponent.sendSocketCommand(Pm2StopCommand(target))
 				}
@@ -71,6 +75,9 @@ class InstanceInactivityManager(
 				try {
 					val info = getInstanceFromLog(it)
 					if (info != null) {
+						if (enableLogging) {
+							logger.info("Setting activity for: ${info.id}")
+						}
 						instanceActivity.put(info.id, System.currentTimeMillis())
 					}
 				} catch (e: Exception) {
