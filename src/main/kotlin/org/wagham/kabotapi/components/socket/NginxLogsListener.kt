@@ -8,7 +8,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 class NginxLogsListener(
 	listenPort: Int,
-): AbstractUdpListener(listenPort, KtorSimpleLogger("NginxLogsListener")) {
+	enableLogging: Boolean
+): AbstractUdpListener(listenPort, KtorSimpleLogger("NginxLogsListener"), enableLogging) {
 
 	private val broadcastChannel = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 

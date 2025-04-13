@@ -1,4 +1,4 @@
-package org.wagham.kabotapi.model.foundry
+package org.wagham.kabotapi.entities.foundry
 
 import kotlinx.serialization.Serializable
 

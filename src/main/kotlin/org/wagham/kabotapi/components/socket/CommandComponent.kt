@@ -16,7 +16,8 @@ import kotlin.time.Duration.Companion.milliseconds
 class CommandComponent(
 	private val sendPort: Int,
 	receivePort: Int,
-): AbstractUdpListener(receivePort, KtorSimpleLogger("CommandComponent")) {
+	enableLogging: Boolean,
+): AbstractUdpListener(receivePort, KtorSimpleLogger("CommandComponent"), enableLogging) {
 
 	private val packetChannel = PeekableChannel<ParsedPacket>(capacity = 1000, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 	private val address = InetAddress.getByName("127.0.0.1")

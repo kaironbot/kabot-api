@@ -7,7 +7,8 @@ import io.ktor.util.logging.*
 
 abstract class AbstractUdpListener(
 	listenPort: Int,
-	protected val logger: Logger
+	protected val logger: Logger,
+	private val enableLogging: Boolean
 ) {
 
 	private val receiveSocket = DatagramSocket(listenPort)
@@ -29,12 +30,15 @@ abstract class AbstractUdpListener(
 						buffer =
 							if (idx == -1) buffer + String(packet.data, 0, packet.length)
 							else String(packet.data, idx + 1, packet.length - idx - 1)
-						logger.info("Buffer: $buffer")
+						if (enableLogging) {
+							logger.info("Buffer: $buffer")
+						}
 						if (received != null) {
-							logger.info("Received: $received")
+							if (enableLogging) {
+								logger.info("Received: $received")
+							}
 							handlePacket(received)
 						}
-
 					} catch (e: Exception) {
 						logger.error("Cannot receive packet", e)
 					}
