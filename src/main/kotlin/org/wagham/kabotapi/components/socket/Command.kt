@@ -15,6 +15,7 @@ sealed class Command <R> (
 		args.forEach {
 			append(" $it")
 		}
+		append('\n')
 	}.toByteArray()
 
 	abstract fun parseResponse(response: List<String>): R
