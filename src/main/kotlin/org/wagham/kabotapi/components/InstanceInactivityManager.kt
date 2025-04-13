@@ -40,6 +40,7 @@ class InstanceInactivityManager(
 		}.build<String, Long>()
 
 	fun startListening() {
+		logger.info("Starting inactivity manager")
 		listenForZombies()
 		listenForLogs()
 	}

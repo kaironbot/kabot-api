@@ -24,6 +24,7 @@ class InstanceConfigManager(
 	private val instancesByUrl = mutableMapOf<String, InstanceInfo>()
 
 	fun startWatching() {
+		logger.info("Starting instance manager")
 		val dirsToWatch = File(baseFolder).walkTopDown().filter {
 			it.isFile && it.name == OPTIONS_FILENAME
 		}.map {

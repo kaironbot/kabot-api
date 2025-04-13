@@ -15,6 +15,7 @@ abstract class AbstractUdpListener(
 	protected abstract fun handlePacket(packet: String)
 
 	fun startListening() {
+		logger.info("Starting ${this::class.simpleName}")
 		thread(start = true, isDaemon = true) {
 			receiveSocket.use { socket ->
 				val rcvBuffer = ByteArray(10240)
