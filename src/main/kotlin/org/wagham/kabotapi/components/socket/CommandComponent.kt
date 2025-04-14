@@ -25,6 +25,7 @@ class CommandComponent(
 
 	override fun handlePacket(packet: String) {
 		val parts = packet.split('|')
+		logger.info("Received packet: $parts")
 		packetChannel.trySend(
 			ParsedPacket(
 				parts[0].toLong(),

@@ -51,7 +51,7 @@ class InstanceInactivityManager(
 
 	private fun listenForZombies() = managerScope.launch {
 		delay(instanceTtl)
-		doInfinity("0 0 * * * *") {
+		doInfinity("0 30 * * * *") {
 			try {
 				commandComponent.sendSocketCommand(Pm2ListCommand()).filter {
 					it.name !in excludedInstances
