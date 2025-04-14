@@ -24,8 +24,7 @@ class CommandComponent(
 	private val socketMutex = Mutex()
 
 	override fun handlePacket(packet: String) {
-		val parts = packet.split('|')
-		logger.info("Received packet: $parts")
+		val parts = packet.trim('\n').split('|')
 		packetChannel.trySend(
 			ParsedPacket(
 				parts[0].toLong(),
