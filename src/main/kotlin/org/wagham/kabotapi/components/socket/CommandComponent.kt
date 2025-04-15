@@ -12,7 +12,7 @@ import org.wagham.kabotapi.data.PeekableChannel
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class CommandComponent(
 	private val sendPort: Int,
@@ -49,7 +49,7 @@ class CommandComponent(
 			val responseJob = launch {
 				do {
 					val hasNext = runCatching {
-						withTimeout(750.milliseconds) {
+						withTimeout(1.seconds) {
 							val next = packetChannel.peek()
 							when {
 								next.ts < command.ts -> {
