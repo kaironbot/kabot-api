@@ -1,6 +1,7 @@
 package org.wagham.kabotapi.components.socket
 
 import io.ktor.util.logging.*
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -61,6 +62,14 @@ class CommandComponent(
 									packetChannel.dropPeeked()
 									next.part < next.total
 								}
+							}
+						}
+					}.onFailure {
+						if (enableLogging) {
+							if(it is TimeoutCancellationException) {
+								logger.error("Timed out waiting for command $command")
+							} else {
+								logger.error("Error while waiting for command $command", it)
 							}
 						}
 					}.getOrDefault(false)

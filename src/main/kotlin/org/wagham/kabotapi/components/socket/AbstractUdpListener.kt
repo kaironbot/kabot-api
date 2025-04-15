@@ -8,7 +8,7 @@ import io.ktor.util.logging.*
 abstract class AbstractUdpListener(
 	listenPort: Int,
 	protected val logger: Logger,
-	private val enableLogging: Boolean
+	protected val enableLogging: Boolean
 ) {
 
 	private val receiveSocket = DatagramSocket(listenPort)
