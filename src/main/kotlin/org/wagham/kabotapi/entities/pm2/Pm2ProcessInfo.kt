@@ -10,12 +10,18 @@ data class Pm2ProcessInfo(
 	val name: String,
 	@SerialName("pm2_env") val pm2Env: Pm2Env,
 	val monit: Pm2Monit
-)
+) {
+
+	val isActive: Boolean
+		get() = pm2Env.status == "online"
+
+}
 
 @Serializable
 data class Pm2Env(
 	@SerialName("unstable_restarts") val unstableRestarts: Int,
-	@SerialName("pm_uptime") val uptime: Long
+	@SerialName("pm_uptime") val uptime: Long,
+	val status: String
 )
 
 @Serializable

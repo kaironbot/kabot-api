@@ -49,7 +49,7 @@ class CommandComponent(
 			val responseJob = launch {
 				do {
 					val hasNext = runCatching {
-						withTimeout(500.milliseconds) {
+						withTimeout(750.milliseconds) {
 							val next = packetChannel.peek()
 							when {
 								next.ts < command.ts -> {

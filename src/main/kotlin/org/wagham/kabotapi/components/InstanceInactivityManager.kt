@@ -54,7 +54,7 @@ class InstanceInactivityManager(
 		doInfinity("0 0 * * * *") {
 			try {
 				commandComponent.sendSocketCommand(Pm2ListCommand()).filter {
-					it.name !in excludedInstances
+					it.isActive && it.name !in excludedInstances
 				}.forEach {
 					if ((System.currentTimeMillis() - it.pm2Env.uptime).milliseconds > 1.hours) {
 						val lastActivity = instanceActivity.getIfPresent(it.name)
