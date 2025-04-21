@@ -50,7 +50,7 @@ class InstanceInactivityManager(
 	}
 
 	private fun listenForZombies() = managerScope.launch {
-//		delay(instanceTtl)
+		delay(instanceTtl)
 		doInfinity("0 0 * * * *") {
 			try {
 				commandComponent.sendSocketCommand(Pm2ListCommand()).filter {
@@ -59,7 +59,13 @@ class InstanceInactivityManager(
 					if ((System.currentTimeMillis() - it.pm2Env.uptime).milliseconds > 1.hours) {
 						val lastActivity = instanceActivity.getIfPresent(it.name)
 						if (lastActivity == null) {
-							commandComponent.sendSocketCommand(Pm2StopCommand(it.name))
+							var retries = 5
+							do {
+								retries = runCatching {
+									commandComponent.sendSocketCommand(Pm2StopCommand(it.name))
+									0
+								}.getOrDefault(retries - 1)
+							} while(retries > 0)
 						}
 					}
 				}
