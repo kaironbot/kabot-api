@@ -9,16 +9,15 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeout
 import org.wagham.kabotapi.data.PeekableChannel
-import java.net.DatagramPacket
-import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.Socket
 import kotlin.time.Duration.Companion.seconds
 
 class CommandComponent(
 	private val sendPort: Int,
 	receivePort: Int,
 	enableLogging: Boolean,
-): AbstractUdpListener(receivePort, KtorSimpleLogger("CommandComponent"), enableLogging) {
+): AbstractTcpListener(receivePort, KtorSimpleLogger("CommandComponent"), enableLogging) {
 
 	private val packetChannel = PeekableChannel<ParsedPacket>(capacity = 1000, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 	private val address = InetAddress.getByName("127.0.0.1")
@@ -36,10 +35,11 @@ class CommandComponent(
 		)
 	}
 
-	private fun sendCommand(datagram: ByteArray) {
-		DatagramSocket().use { socket ->
-			val packet = DatagramPacket(datagram, datagram.size, address, sendPort)
-			socket.send(packet)
+	private fun sendCommand(data: ByteArray) {
+		Socket(address, sendPort).use { socket ->
+			val output = socket.getOutputStream()
+			output.write(data)
+			output.flush()
 		}
 	}
 
