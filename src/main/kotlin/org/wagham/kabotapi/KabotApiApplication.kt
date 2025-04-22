@@ -5,6 +5,7 @@ import org.wagham.kabotapi.configuration.configureExceptions
 import org.wagham.kabotapi.configuration.configureHTTP
 import org.wagham.kabotapi.configuration.configureKoin
 import org.wagham.kabotapi.configuration.configureRouting
+import org.wagham.kabotapi.configuration.configureThrottling
 
 fun main(args: Array<String>) {
 	io.ktor.server.netty.EngineMain.main(args)
@@ -15,5 +16,6 @@ fun Application.module() {
 	configureHTTP()
 	configureKoin()
 	configureExceptions()
+	configureThrottling()
 	configureRouting()
 }

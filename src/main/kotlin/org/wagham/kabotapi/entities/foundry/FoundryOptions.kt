@@ -29,5 +29,6 @@ data class FoundryOptions(
 	val hotReload: Boolean = false,
 	val protocol: String? = null,
 	val telemetry: Boolean = false,
-	val masterName: String? = null
+	val masterName: String? = null,
+	val domain: String? = null,
 )

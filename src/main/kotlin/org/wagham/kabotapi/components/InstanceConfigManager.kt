@@ -1,5 +1,6 @@
 package org.wagham.kabotapi.components
 
+import dev.inmo.krontab.doInfinity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import io.github.irgaly.kfswatch.KfsDirectoryWatcher
@@ -9,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.wagham.kabotapi.entities.foundry.FoundryOptions
 import java.io.File
+import java.nio.file.Files
 
 class InstanceConfigManager(
 	private val baseFolder: String
@@ -22,6 +24,8 @@ class InstanceConfigManager(
 	private val scope = CoroutineScope(Dispatchers.IO)
 	private val watcher = KfsDirectoryWatcher(scope)
 	private val instancesByUrl = mutableMapOf<String, InstanceInfo>()
+	private val urlById = mutableMapOf<String, String>()
+	private val sizeByInstanceId = mutableMapOf<String, Long>()
 
 	fun startWatching() {
 		logger.info("Starting instance manager")
@@ -51,9 +55,38 @@ class InstanceConfigManager(
 				}
 			}
 		}
+		startWatchingInstanceSize()
 	}
 
-	fun getInfoByUrl(url: String): InstanceInfo? = instancesByUrl[url]
+	fun getConfigByUrl(url: String): InstanceInfo? = instancesByUrl[url]
+
+	fun getConfigById(id: String): InstanceInfo? = urlById[id]?.let {
+		getConfigByUrl(it)
+	}
+
+	fun getFolderSizeById(id: String): Long? = sizeByInstanceId[id]
+
+	private fun getFolderSize(folder: File): Long = folder.walkTopDown().filter {
+		it.isFile && !Files.isSymbolicLink(it.toPath())
+	}.sumOf { it.length() }
+
+	private fun computeInstancesSize() {
+//		File(baseFolder).listFiles().filter {
+//			it.isDirectory
+//		}.onEach {
+//			val size = getFolderSize(it)
+//			sizeByInstanceId[it.name] = size
+//		}
+	}
+
+	private fun startWatchingInstanceSize() {
+		computeInstancesSize()
+		scope.launch {
+			doInfinity("0 0 * * * *") {
+				computeInstancesSize()
+			}
+		}
+	}
 
 	private fun updateInstancesWith(optionsFile: File) {
 		val options = Json.decodeFromString<FoundryOptions>(optionsFile.readText())
@@ -61,7 +94,9 @@ class InstanceConfigManager(
 			id = options.dataPath.split("/").last(),
 			url = options.routePrefix,
 			name = options.masterName ?: "unknown",
+			domain = options.domain
 		)
+		urlById[info.id] = info.url
 		instancesByUrl[info.url] = info.also {
 			logger.info("Updating ${info.url} with $it")
 		}
@@ -70,7 +105,8 @@ class InstanceConfigManager(
 	data class InstanceInfo(
 		val id: String,
 		val url: String,
-		val name: String
+		val name: String,
+		val domain: String?
 	)
 
 }

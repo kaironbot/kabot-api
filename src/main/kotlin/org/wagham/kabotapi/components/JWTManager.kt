@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
 import io.ktor.server.auth.jwt.*
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.wagham.kabotapi.entities.config.JWTConfig
 import org.wagham.kabotapi.entities.security.JWTClaims
@@ -52,13 +51,15 @@ class JWTManager(
         .sign(Algorithm.HMAC256(config.authSecret))
 
     /**
-     * @return a [JWTVerifier] for the authentication jwt.
+     * a [JWTVerifier] for the authentication jwt.
      */
-    fun authJWTVerifier(): JWTVerifier = JWT
+    val authJWTVerifier: JWTVerifier = JWT
         .require(Algorithm.HMAC256(config.authSecret))
         .withAudience(config.audience)
         .withIssuer(config.issuer)
         .build()
+
+    fun decodeAndGetClaims(token: String): JWTClaims = authJWTVerifier.verify(token).toJWTClaims()
 
     private fun Payload.isAuthJwtValid() =
         getClaim(USER_ID).asString().isNotBlank()
