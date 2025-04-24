@@ -30,7 +30,7 @@ fun Routing.foundryController() = route("/foundry") {
 				"Instance URL must not be null"
 			}
 			val redirectUrl = foundryLogic.startInstance(instanceUrl)
-			delay(2.seconds)
+			delay(10.seconds)
 			call.respondRedirect(redirectUrl, permanent = false)
 		}
 	}
@@ -41,7 +41,7 @@ fun Routing.foundryController() = route("/foundry") {
 				"Instance URL must not be null"
 			}
 			val redirectUrl = foundryLogic.startInstance(instanceUrl)
-			delay(2.seconds)
+			delay(10.seconds)
 			call.respondRedirect(redirectUrl, permanent = false)
 		}
 	}
