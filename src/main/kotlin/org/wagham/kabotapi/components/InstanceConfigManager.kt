@@ -71,12 +71,12 @@ class InstanceConfigManager(
 	}.sumOf { it.length() }
 
 	private fun computeInstancesSize() {
-//		File(baseFolder).listFiles().filter {
-//			it.isDirectory
-//		}.onEach {
-//			val size = getFolderSize(it)
-//			sizeByInstanceId[it.name] = size
-//		}
+		File(baseFolder).listFiles().filter {
+			it.isDirectory
+		}.onEach {
+			val size = getFolderSize(it)
+			sizeByInstanceId[it.name] = size
+		}
 	}
 
 	private fun startWatchingInstanceSize() {
