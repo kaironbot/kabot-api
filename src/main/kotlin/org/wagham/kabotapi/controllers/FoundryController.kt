@@ -3,13 +3,10 @@ package org.wagham.kabotapi.controllers
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.response.respond
-import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.sse.sse
-import korlibs.time.seconds
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 import org.wagham.db.enums.NyxRoles
@@ -30,19 +27,7 @@ fun Routing.foundryController() = route("/foundry") {
 				"Instance URL must not be null"
 			}
 			val redirectUrl = foundryLogic.startInstance(instanceUrl)
-			delay(2.5.seconds)
-			call.respondRedirect(redirectUrl, permanent = false)
-		}
-	}
-
-	rateLimit(RateLimitName(INACTIVE_RATE_LIMIT)) {
-		get("/inactive/{instanceUrl}/{other}") {
-			val instanceUrl = checkNotNull(call.parameters["instanceUrl"]) {
-				"Instance URL must not be null"
-			}
-			val redirectUrl = foundryLogic.startInstance(instanceUrl)
-			delay(2.5.seconds)
-			call.respondRedirect(redirectUrl, permanent = false)
+			call.respond(redirectUrl)
 		}
 	}
 
