@@ -1,6 +1,7 @@
 package org.wagham.kabotapi.components.socket
 
 import io.ktor.util.logging.*
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -11,7 +12,7 @@ import org.wagham.kabotapi.data.PeekableChannel
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class CommandComponent(
 	private val sendPort: Int,
@@ -24,7 +25,7 @@ class CommandComponent(
 	private val socketMutex = Mutex()
 
 	override fun handlePacket(packet: String) {
-		val parts = packet.split('|')
+		val parts = packet.trim('\n').split('|', limit = 4)
 		packetChannel.trySend(
 			ParsedPacket(
 				parts[0].toLong(),
@@ -48,7 +49,7 @@ class CommandComponent(
 			val responseJob = launch {
 				do {
 					val hasNext = runCatching {
-						withTimeout(500.milliseconds) {
+						withTimeout(1.seconds) {
 							val next = packetChannel.peek()
 							when {
 								next.ts < command.ts -> {
@@ -61,6 +62,14 @@ class CommandComponent(
 									packetChannel.dropPeeked()
 									next.part < next.total
 								}
+							}
+						}
+					}.onFailure {
+						if (enableLogging) {
+							if(it is TimeoutCancellationException) {
+								logger.error("Timed out waiting for command $command")
+							} else {
+								logger.error("Error while waiting for command $command", it)
 							}
 						}
 					}.getOrDefault(false)

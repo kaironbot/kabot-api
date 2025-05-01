@@ -34,7 +34,7 @@ fun Application.configureHTTP() {
     install(Authentication) {
         jwt(AUTH_CTX) {
             realm = jwtManager.config.realm
-            verifier(jwtManager.authJWTVerifier())
+            verifier(jwtManager.authJWTVerifier)
 
             validate { credential ->
                 jwtManager.authCredentialToPrincipal(credential)

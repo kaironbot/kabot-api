@@ -9,10 +9,12 @@ data class FoundryConfig(
 	val instanceTtl: Duration,
 	val excludedInstances: Set<String>,
 	val enableLogging: Boolean,
+	val defaultDomain: String
 ) {
 	companion object {
 		fun fromConfig(config: ApplicationConfig) = FoundryConfig(
 			instanceFolder = config.property("foundry.instanceFolder").getString(),
+			defaultDomain = config.property("foundry.defaultDomain").getString(),
 			enableLogging = config.property("foundry.enableLogging").getString().toBoolean(),
 			instanceTtl = config.property("foundry.instanceTtlInMinutes").getString().toInt().minutes,
 			excludedInstances = config.property("foundry.excludedInstances").getString()

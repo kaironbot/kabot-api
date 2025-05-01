@@ -27,7 +27,7 @@ class InstanceInactivityManager(
 	private val enableLogging: Boolean,
 ) {
 
-	private val urlExtractingRegex = Regex(".* \"https://fnd\\.kaironbot\\.net/([^/]+).*")
+	private val urlExtractingRegex = Regex(".* \"https://fnd\\.[^/]+/([^/]+).*")
 	private val managerScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 	private val logger = KtorSimpleLogger(this.javaClass.simpleName)
 	private val instanceActivity = Caffeine.newBuilder()
@@ -54,12 +54,18 @@ class InstanceInactivityManager(
 		doInfinity("0 0 * * * *") {
 			try {
 				commandComponent.sendSocketCommand(Pm2ListCommand()).filter {
-					it.name !in excludedInstances
+					it.isActive && it.name !in excludedInstances
 				}.forEach {
 					if ((System.currentTimeMillis() - it.pm2Env.uptime).milliseconds > 1.hours) {
 						val lastActivity = instanceActivity.getIfPresent(it.name)
 						if (lastActivity == null) {
-							commandComponent.sendSocketCommand(Pm2StopCommand(it.name))
+							var retries = 5
+							do {
+								retries = runCatching {
+									commandComponent.sendSocketCommand(Pm2StopCommand(it.name))
+									0
+								}.getOrDefault(retries - 1)
+							} while(retries > 0)
 						}
 					}
 				}
@@ -89,11 +95,11 @@ class InstanceInactivityManager(
 		}
 	}
 
-
+	fun getLastActivityOf(instanceId: String): Long? = instanceActivity.getIfPresent(instanceId)
 
 	private fun getInstanceFromLog(log: String): InstanceConfigManager.InstanceInfo? =
 		urlExtractingRegex.find(log)?.groupValues?.get(1)?.let {
-			instanceConfigManager.getInfoByUrl(it)
+			instanceConfigManager.getConfigByUrl(it)
 		}?.takeIf {
 			it.id !in excludedInstances
 		}
